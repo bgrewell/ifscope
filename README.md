@@ -33,7 +33,7 @@ summary. The same data is available as stable JSON for automation.
 ## Quick start
 
 ```bash
-# Build (Go 1.26+)
+# Build (Go 1.24+)
 make build
 ./bin/ifscope
 

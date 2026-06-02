@@ -1,0 +1,13 @@
+version: "2"
+
+linters:
+  settings:
+    errcheck:
+      # Writes to terminal output and deferred Close on response bodies have no
+      # actionable error path; excluding them keeps rendering code readable.
+      exclude-functions:
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
+        - io.WriteString
+        - (io.ReadCloser).Close

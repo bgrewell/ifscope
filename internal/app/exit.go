@@ -1,9 +1,6 @@
 package app
 
-import (
-	"errors"
-	"fmt"
-)
+import "errors"
 
 // errTestFailed marks a connectivity-test failure for exit-code mapping.
 var errTestFailed = errors.New("one or more connectivity tests failed")
@@ -28,8 +25,3 @@ type ExitCodeError struct {
 
 func (e *ExitCodeError) Error() string { return e.Err.Error() }
 func (e *ExitCodeError) Unwrap() error { return e.Err }
-
-// codedError wraps err with an exit code.
-func codedError(code int, format string, a ...any) *ExitCodeError {
-	return &ExitCodeError{Code: code, Err: fmt.Errorf(format, a...)}
-}
