@@ -51,6 +51,7 @@ func newRootCommand(o *Options) *cobra.Command {
 		newRoutesCommand(o),
 		newDNSCommand(o),
 		newOVSCommand(o),
+		newSRIOVCommand(o),
 		newTestCommand(o),
 		newAllCommand(o),
 		newVersionCommand(),

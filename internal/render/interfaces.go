@@ -29,7 +29,7 @@ func (o Options) write(w io.Writer, t Table) {
 // Interfaces renders the interface table. Driver/firmware/speed/port columns
 // are populated by later enrichment; they render empty until then.
 func (o Options) Interfaces(w io.Writer, ifaces []model.Interface) {
-	headers := []string{"ID", "NAME", "MAC", "STATE", "ADDRS", "DRIVER", "FIRMWARE", "BUS", "SPEED", "PORT", "ALTNAMES"}
+	headers := []string{"ID", "NAME", "MAC", "STATE", "ADDRS", "DRIVER", "FIRMWARE", "BUS", "SPEED", "PORT", "ALTNAMES", "SRIOV", "VFS"}
 	if o.Summary {
 		headers = []string{"ID", "NAME", "MAC", "STATE", "ADDRS", "DRIVER", "BUS", "SPEED", "PORT"}
 	}
@@ -47,7 +47,8 @@ func (o Options) Interfaces(w io.Writer, ifaces []model.Interface) {
 		if o.Summary {
 			base = append(base, busDisplay(i.Bus), i.Speed, i.Port)
 		} else {
-			base = append(base, i.Firmware, busDisplay(i.Bus), i.Speed, i.Port, strings.Join(i.AltNames, "\n"))
+			base = append(base, i.Firmware, busDisplay(i.Bus), i.Speed, i.Port,
+				strings.Join(i.AltNames, "\n"), sriovCell(i), vfsCell(i))
 		}
 		rows = append(rows, base)
 	}
@@ -95,4 +96,39 @@ func ipv4Cell(i model.Interface) string {
 // full bus address is preserved in JSON output.
 func busDisplay(bus string) string {
 	return strings.TrimPrefix(bus, "0000:")
+}
+
+// sriovCell summarizes SR-IOV state: "cfg/total" for a PF, "VF of <pf>" for a
+// VF, and "-" for a device without SR-IOV.
+func sriovCell(i model.Interface) string {
+	s := i.SRIOV
+	switch {
+	case s == nil:
+		return "-"
+	case s.VF:
+		if s.PF != "" {
+			return "VF of " + s.PF
+		}
+		return "VF"
+	case s.Capable:
+		return strconv.Itoa(s.ConfiguredVFs) + "/" + strconv.Itoa(s.TotalVFs)
+	default:
+		return "-"
+	}
+}
+
+// vfsCell lists configured VF netdevs (one per line) for a PF, blank otherwise.
+func vfsCell(i model.Interface) string {
+	if i.SRIOV == nil || i.SRIOV.VF || len(i.SRIOV.VFs) == 0 {
+		return ""
+	}
+	var names []string
+	for _, vf := range i.SRIOV.VFs {
+		if vf.Netdev != "" {
+			names = append(names, vf.Netdev)
+		} else {
+			names = append(names, "vf"+strconv.Itoa(vf.Index))
+		}
+	}
+	return strings.Join(names, "\n")
 }

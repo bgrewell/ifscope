@@ -66,6 +66,7 @@ func (o *Options) gather(ctx context.Context, withPCIe bool) (ifaces, vlans []mo
 	all, w := collect.NewInterfaces(r).Collect(ctx)
 	warnings = append(warnings, w...)
 	warnings = append(warnings, collect.NewEthtool(r).Enrich(ctx, all)...)
+	warnings = append(warnings, collect.NewSRIOV(r, sysfs.OS{}).Enrich(ctx, all)...)
 
 	if withPCIe {
 		var pw []model.Warning
