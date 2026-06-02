@@ -1,0 +1,46 @@
+# Binaries and build output
+/bin/
+/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binaries and coverage
+*.test
+*.out
+coverage.*
+profile.cov
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Dependency directory (legacy, when vendoring is not used)
+# vendor/
+
+# Output of `go build` when building a named binary in repo root
+/ifscope
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment / local secrets
+.env
+.env.local
+*.local
+
+# Claude Code local settings (per-machine permissions)
+.claude/settings.local.json
+
+# Internal planning material and the GPL netcheck reference (not for release)
+.planning/

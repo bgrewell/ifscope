@@ -1,0 +1,97 @@
+[
+  {
+    "ifindex": 1,
+    "ifname": "lo",
+    "flags": ["LOOPBACK", "UP", "LOWER_UP"],
+    "mtu": 65536,
+    "operstate": "UNKNOWN",
+    "link_type": "loopback",
+    "address": "00:00:00:00:00:00",
+    "addr_info": [
+      {"family": "inet", "local": "127.0.0.1", "prefixlen": 8, "scope": "host"},
+      {"family": "inet6", "local": "::1", "prefixlen": 128, "scope": "host"}
+    ]
+  },
+  {
+    "ifindex": 2,
+    "ifname": "eth0",
+    "flags": ["BROADCAST", "MULTICAST", "UP", "LOWER_UP"],
+    "mtu": 1500,
+    "operstate": "UP",
+    "link_type": "ether",
+    "address": "0c:c4:7a:ff:56:bc",
+    "parentbus": "pci",
+    "parentdev": "0000:33:00.0",
+    "altnames": ["enp51s0f0"],
+    "addr_info": [
+      {"family": "inet", "local": "192.0.2.10", "prefixlen": 24, "scope": "global", "dynamic": true, "label": "eth0"},
+      {"family": "inet", "local": "192.0.2.11", "prefixlen": 24, "scope": "global", "secondary": true},
+      {"family": "inet6", "local": "fe80::ec4:7aff:feff:56bc", "prefixlen": 64, "scope": "link"}
+    ]
+  },
+  {
+    "ifindex": 3,
+    "ifname": "eth1",
+    "flags": ["NO-CARRIER", "BROADCAST", "MULTICAST", "UP"],
+    "mtu": 1500,
+    "operstate": "DOWN",
+    "link_type": "ether",
+    "address": "0c:c4:7a:ff:56:bd",
+    "parentbus": "pci",
+    "parentdev": "0000:33:00.1",
+    "altnames": ["enp51s0f1"],
+    "addr_info": []
+  },
+  {
+    "ifindex": 4,
+    "ifname": "eth0.100",
+    "flags": ["BROADCAST", "MULTICAST", "UP", "LOWER_UP"],
+    "mtu": 1500,
+    "operstate": "UP",
+    "link_type": "ether",
+    "address": "0c:c4:7a:ff:56:bc",
+    "link": "eth0",
+    "link_index": 2,
+    "linkinfo": {
+      "info_kind": "vlan",
+      "info_data": {"protocol": "802.1Q", "id": 100, "flags": ["REORDER_HDR"]}
+    },
+    "addr_info": [
+      {"family": "inet", "local": "10.100.0.5", "prefixlen": 24, "scope": "global"}
+    ]
+  },
+  {
+    "ifindex": 5,
+    "ifname": "br0",
+    "flags": ["BROADCAST", "MULTICAST", "UP", "LOWER_UP"],
+    "mtu": 1500,
+    "operstate": "UP",
+    "link_type": "ether",
+    "address": "0c:c4:7a:ff:56:be",
+    "linkinfo": {"info_kind": "bridge"},
+    "addr_info": []
+  },
+  {
+    "ifindex": 6,
+    "ifname": "veth1234",
+    "flags": ["BROADCAST", "MULTICAST", "UP", "LOWER_UP"],
+    "mtu": 1500,
+    "operstate": "UP",
+    "link_type": "ether",
+    "address": "aa:bb:cc:dd:ee:ff",
+    "master": "br0",
+    "linkinfo": {"info_kind": "veth"},
+    "addr_info": []
+  },
+  {
+    "ifindex": 7,
+    "ifname": "vlan2001",
+    "flags": ["BROADCAST", "MULTICAST", "UP", "LOWER_UP"],
+    "mtu": 1500,
+    "operstate": "UNKNOWN",
+    "link_type": "ether",
+    "address": "0c:c4:7a:ff:56:c0",
+    "linkinfo": {"info_kind": "openvswitch"},
+    "addr_info": []
+  }
+]
