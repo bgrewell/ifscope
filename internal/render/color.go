@@ -9,9 +9,10 @@ import (
 
 // ANSI SGR sequences used for state coloring.
 const (
-	ansiReset = "\033[0m"
-	ansiRed   = "\033[31m"
-	ansiGreen = "\033[32m"
+	ansiReset  = "\033[0m"
+	ansiRed    = "\033[31m"
+	ansiGreen  = "\033[32m"
+	ansiYellow = "\033[33m"
 )
 
 // Color applies optional ANSI coloring. The zero value is disabled.
@@ -44,6 +45,24 @@ func (c Color) State(state string) string {
 		return ansiRed + state + ansiReset
 	default:
 		return state
+	}
+}
+
+// TestStatus colors a connectivity test status: green pass, red fail, yellow
+// skip; unknown is left uncolored.
+func (c Color) TestStatus(status string) string {
+	if !c.enabled {
+		return status
+	}
+	switch status {
+	case "pass":
+		return ansiGreen + status + ansiReset
+	case "fail":
+		return ansiRed + status + ansiReset
+	case "skip":
+		return ansiYellow + status + ansiReset
+	default:
+		return status
 	}
 }
 

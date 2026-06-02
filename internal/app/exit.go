@@ -1,6 +1,12 @@
 package app
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+// errTestFailed marks a connectivity-test failure for exit-code mapping.
+var errTestFailed = errors.New("one or more connectivity tests failed")
 
 // Exit codes per the REL-1 spec. Inspection commands return 0 even when
 // optional data is missing; only explicit failures use non-zero codes.

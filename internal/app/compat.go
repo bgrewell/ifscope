@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/bgrewell/ifscope/internal/collect"
+	"github.com/bgrewell/ifscope/internal/model"
 	"github.com/bgrewell/ifscope/internal/render"
 	"github.com/spf13/cobra"
 )
@@ -54,6 +56,7 @@ func (o *Options) runCompat(c compatFlags) error {
 
 	rep := newReport()
 	var sections []func(render.Options)
+	var tests []model.TestResult
 
 	if c.interfaces || c.vlans || c.pcie {
 		ifaces, vlans, devices, w := o.gather(ctx, c.pcie)
@@ -84,6 +87,14 @@ func (o *Options) runCompat(c compatFlags) error {
 		rep.DNS = dns
 		sections = append(sections, func(ro render.Options) { renderDNS(ro, dns) })
 	}
+	if c.test {
+		tests = collect.NewConnectivity(o.runner(), nil).Run(ctx, o.connOptions())
+		rep.Tests = tests
+		sections = append(sections, func(ro render.Options) {
+			ro.Section(os.Stdout, "Connectivity")
+			ro.Tests(os.Stdout, tests)
+		})
+	}
 
 	if err := o.emit(rep, func(ro render.Options) {
 		for i, fn := range sections {
@@ -93,6 +104,9 @@ func (o *Options) runCompat(c compatFlags) error {
 			fn(ro)
 		}
 	}); err != nil {
+		return err
+	}
+	if err := exitForFailedTests(tests); err != nil {
 		return err
 	}
 	return exitForWarnings(rep.Warnings)
