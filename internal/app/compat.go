@@ -55,8 +55,8 @@ func (o *Options) runCompat(c compatFlags) error {
 	rep := newReport()
 	var sections []func(render.Options)
 
-	if c.interfaces || c.vlans {
-		ifaces, vlans, w := o.collectInterfaces(ctx)
+	if c.interfaces || c.vlans || c.pcie {
+		ifaces, vlans, devices, w := o.gather(ctx, c.pcie)
 		rep.Warnings = append(rep.Warnings, w...)
 		if c.interfaces {
 			rep.Interfaces = ifaces
@@ -65,6 +65,10 @@ func (o *Options) runCompat(c compatFlags) error {
 		if c.vlans {
 			rep.VLANs = vlans
 			sections = append(sections, func(ro render.Options) { renderVLANs(ro, vlans) })
+		}
+		if c.pcie {
+			rep.PCIe = devices
+			sections = append(sections, func(ro render.Options) { renderPCIe(ro, devices) })
 		}
 	}
 

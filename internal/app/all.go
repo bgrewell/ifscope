@@ -23,16 +23,19 @@ func (o *Options) runAll() error {
 	ctx, cancel := commandContext()
 	defer cancel()
 
-	ifaces, vlans, warnings := o.collectInterfaces(ctx)
+	ifaces, vlans, devices, warnings := o.gather(ctx, true)
 	rep := newReport()
 	rep.Interfaces = ifaces
 	rep.VLANs = vlans
+	rep.PCIe = devices
 	rep.Warnings = warnings
 
 	if err := o.emit(rep, func(ro render.Options) {
 		renderInterfaces(ro, ifaces)
 		fmt.Fprintln(os.Stdout)
 		renderVLANs(ro, vlans)
+		fmt.Fprintln(os.Stdout)
+		renderPCIe(ro, devices)
 	}); err != nil {
 		return err
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/bgrewell/ifscope/internal/model"
 	"github.com/bgrewell/ifscope/internal/render"
 	"github.com/bgrewell/ifscope/internal/run"
+	"github.com/bgrewell/ifscope/internal/sysfs"
 	"github.com/bgrewell/ifscope/internal/version"
 )
 
@@ -57,10 +58,20 @@ func newReport() *model.Report {
 	}
 }
 
-// collectInterfaces gathers interfaces and VLANs, applying filters and sorting.
-func (o *Options) collectInterfaces(ctx context.Context) (ifaces, vlans []model.Interface, warnings []model.Warning) {
-	all, w := collect.NewInterfaces(o.runner()).Collect(ctx)
+// gather collects interfaces, enriches them with ethtool details, and
+// optionally builds the PCIe device table (which also fills NUMA/device-name
+// fields). It then partitions, filters, and sorts for presentation.
+func (o *Options) gather(ctx context.Context, withPCIe bool) (ifaces, vlans []model.Interface, devices []model.PCIDevice, warnings []model.Warning) {
+	r := o.runner()
+	all, w := collect.NewInterfaces(r).Collect(ctx)
 	warnings = append(warnings, w...)
+	warnings = append(warnings, collect.NewEthtool(r).Enrich(ctx, all)...)
+
+	if withPCIe {
+		var pw []model.Warning
+		devices, pw = collect.NewPCIe(r, sysfs.OS{}).Collect(ctx, all)
+		warnings = append(warnings, pw...)
+	}
 
 	ifaces, vlans = correlate.Partition(all)
 	f := o.filter()
@@ -68,6 +79,12 @@ func (o *Options) collectInterfaces(ctx context.Context) (ifaces, vlans []model.
 	vlans = f.Apply(vlans)
 	correlate.SortInterfaces(ifaces)
 	correlate.SortVLANs(vlans)
+	return ifaces, vlans, devices, warnings
+}
+
+// collectInterfaces gathers interfaces and VLANs without PCIe enrichment.
+func (o *Options) collectInterfaces(ctx context.Context) (ifaces, vlans []model.Interface, warnings []model.Warning) {
+	ifaces, vlans, _, warnings = o.gather(ctx, false)
 	return ifaces, vlans, warnings
 }
 

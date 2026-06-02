@@ -49,3 +49,8 @@ func renderVLANs(ro render.Options, vlans []model.Interface) {
 	ro.Section(os.Stdout, "VLANs")
 	ro.VLANs(os.Stdout, vlans)
 }
+
+func renderPCIe(ro render.Options, devices []model.PCIDevice) {
+	ro.Section(os.Stdout, "PCIe")
+	ro.PCIe(os.Stdout, devices)
+}

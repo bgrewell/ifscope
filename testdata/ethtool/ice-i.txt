@@ -1,0 +1,10 @@
+driver: ice
+version: 7.0.0-15-generic
+firmware-version: 4.30 0x8001be17 1.3429.0
+expansion-rom-version: 
+bus-info: 0000:17:00.0
+supports-statistics: yes
+supports-test: yes
+supports-eeprom-access: yes
+supports-register-dump: yes
+supports-priv-flags: yes
