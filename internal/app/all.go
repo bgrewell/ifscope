@@ -24,10 +24,17 @@ func (o *Options) runAll() error {
 	defer cancel()
 
 	ifaces, vlans, devices, warnings := o.gather(ctx, true)
+	routes, rw := o.collectRoutes(ctx)
+	warnings = append(warnings, rw...)
+	dns, dw := o.collectDNS(ctx)
+	warnings = append(warnings, dw...)
+
 	rep := newReport()
 	rep.Interfaces = ifaces
 	rep.VLANs = vlans
 	rep.PCIe = devices
+	rep.Routes = routes
+	rep.DNS = dns
 	rep.Warnings = warnings
 
 	if err := o.emit(rep, func(ro render.Options) {
@@ -36,6 +43,10 @@ func (o *Options) runAll() error {
 		renderVLANs(ro, vlans)
 		fmt.Fprintln(os.Stdout)
 		renderPCIe(ro, devices)
+		fmt.Fprintln(os.Stdout)
+		renderRoutes(ro, routes)
+		fmt.Fprintln(os.Stdout)
+		renderDNS(ro, dns)
 	}); err != nil {
 		return err
 	}

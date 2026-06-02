@@ -72,6 +72,19 @@ func (o *Options) runCompat(c compatFlags) error {
 		}
 	}
 
+	if c.routes {
+		routes, w := o.collectRoutes(ctx)
+		rep.Warnings = append(rep.Warnings, w...)
+		rep.Routes = routes
+		sections = append(sections, func(ro render.Options) { renderRoutes(ro, routes) })
+	}
+	if c.dns {
+		dns, w := o.collectDNS(ctx)
+		rep.Warnings = append(rep.Warnings, w...)
+		rep.DNS = dns
+		sections = append(sections, func(ro render.Options) { renderDNS(ro, dns) })
+	}
+
 	if err := o.emit(rep, func(ro render.Options) {
 		for i, fn := range sections {
 			if i > 0 {
