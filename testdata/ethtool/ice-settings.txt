@@ -1,0 +1,18 @@
+netlink error: Operation not permitted
+Settings for enp23s0np0:
+	Supported ports: [ FIBRE ]
+	Supported link modes:   25000baseCR/Full
+	                        50000baseCR2/Full
+	                        100000baseCR4/Full
+	Supported pause frame use: Symmetric
+	Supports auto-negotiation: Yes
+	Supported FEC modes: None	 RS	 BASER
+	Advertised link modes:  25000baseCR/Full
+	                        100000baseCR4/Full
+	Speed: 100000Mb/s
+	Duplex: Full
+	Auto-negotiation: on
+	Port: Direct Attach Copper
+	PHYAD: 0
+	Transceiver: internal
+	Link detected: yes

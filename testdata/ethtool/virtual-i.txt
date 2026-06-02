@@ -1,0 +1,6 @@
+driver: bridge
+version: 2.3
+firmware-version: N/A
+expansion-rom-version: 
+bus-info: 
+supports-statistics: no
