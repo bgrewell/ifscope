@@ -46,6 +46,8 @@ jobs:
           go-version: '1.26'
           check-latest: true
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: latest
+          # Pinned to match the version tested locally; .golangci.yml uses the
+          # golangci-lint v2 config schema, which requires the v2 line.
+          version: v2.12.2
