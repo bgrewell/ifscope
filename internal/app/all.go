@@ -28,6 +28,7 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, rw...)
 	dns, dw := o.collectDNS(ctx)
 	warnings = append(warnings, dw...)
+	ovs := o.maybeOVS(ctx, &warnings, ifaces, vlans)
 
 	rep := newReport()
 	rep.Interfaces = ifaces
@@ -35,6 +36,7 @@ func (o *Options) runAll() error {
 	rep.PCIe = devices
 	rep.Routes = routes
 	rep.DNS = dns
+	rep.OVS = ovs
 	rep.Warnings = warnings
 
 	if err := o.emit(rep, func(ro render.Options) {
@@ -47,6 +49,10 @@ func (o *Options) runAll() error {
 		renderRoutes(ro, routes)
 		fmt.Fprintln(os.Stdout)
 		renderDNS(ro, dns)
+		if ovs != nil {
+			fmt.Fprintln(os.Stdout)
+			renderOVS(ro, ovs)
+		}
 	}); err != nil {
 		return err
 	}

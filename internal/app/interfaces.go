@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/bgrewell/ifscope/internal/render"
@@ -23,12 +24,19 @@ func (o *Options) runInterfaces() error {
 	defer cancel()
 
 	ifaces, _, warnings := o.collectInterfaces(ctx)
+	ovs := o.maybeOVS(ctx, &warnings, ifaces)
+
 	rep := newReport()
 	rep.Interfaces = ifaces
+	rep.OVS = ovs
 	rep.Warnings = warnings
 
 	if err := o.emit(rep, func(ro render.Options) {
 		ro.Interfaces(os.Stdout, ifaces)
+		if ovs != nil {
+			fmt.Fprintln(os.Stdout)
+			renderOVS(ro, ovs)
+		}
 	}); err != nil {
 		return err
 	}

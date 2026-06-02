@@ -50,6 +50,7 @@ func newRootCommand(o *Options) *cobra.Command {
 		newPCIeCommand(o),
 		newRoutesCommand(o),
 		newDNSCommand(o),
+		newOVSCommand(o),
 		newTestCommand(o),
 		newAllCommand(o),
 		newVersionCommand(),

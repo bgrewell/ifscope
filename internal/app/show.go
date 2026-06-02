@@ -25,19 +25,26 @@ func (o *Options) runShow() error {
 	defer cancel()
 
 	ifaces, vlans, warnings := o.collectInterfaces(ctx)
+	ovs := o.maybeOVS(ctx, &warnings, ifaces, vlans)
+
 	rep := newReport()
 	rep.Interfaces = ifaces
 	rep.VLANs = vlans
+	rep.OVS = ovs
 	rep.Warnings = warnings
 
 	if err := o.emit(rep, func(ro render.Options) {
 		renderInterfaces(ro, ifaces)
 		fmt.Fprintln(os.Stdout)
 		renderVLANs(ro, vlans)
+		if ovs != nil {
+			fmt.Fprintln(os.Stdout)
+			renderOVS(ro, ovs)
+		}
 	}); err != nil {
 		return err
 	}
-	return exitForWarnings(warnings)
+	return exitForWarnings(rep.Warnings)
 }
 
 func renderInterfaces(ro render.Options, ifaces []model.Interface) {
