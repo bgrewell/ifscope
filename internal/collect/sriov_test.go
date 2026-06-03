@@ -108,6 +108,20 @@ func TestSRIOVEnrichNonSRIOV(t *testing.T) {
 	}
 }
 
+func TestSRIOVTotalVFsZeroNotCapable(t *testing.T) {
+	// sriov_totalvfs present but 0 means no VFs are possible; the device is not
+	// SR-IOV capable and gets no SRIOV block.
+	fs := sysfs.NewFake()
+	fs.Files["/sys/class/net/eth0/device/sriov_totalvfs"] = "0\n"
+	fs.Files["/sys/class/net/eth0/device/sriov_numvfs"] = "0\n"
+
+	ifaces := []model.Interface{{Name: "eth0", Bus: "0000:01:00.0"}}
+	NewSRIOV(run.NewFake(), fs).Enrich(context.Background(), ifaces)
+	if ifaces[0].SRIOV != nil {
+		t.Errorf("totalvfs=0 should yield no SRIOV block, got %+v", ifaces[0].SRIOV)
+	}
+}
+
 func TestSRIOVPFNoConfiguredVFs(t *testing.T) {
 	fs := sysfs.NewFake()
 	fs.Files["/sys/class/net/pf0/device/sriov_totalvfs"] = "64\n"

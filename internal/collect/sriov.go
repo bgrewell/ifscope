@@ -53,6 +53,13 @@ func (c *SRIOV) collectPF(ctx context.Context, iface model.Interface, dev string
 	total, _ := sysfs.ReadInt(c.FS, dev+"/sriov_totalvfs")
 	configured, _ := sysfs.ReadInt(c.FS, dev+"/sriov_numvfs")
 
+	// sriov_totalvfs is the read-only hardware/firmware maximum. A value of 0
+	// means no VFs are possible, so the device is not SR-IOV capable in
+	// practice; report it as an ordinary interface (no SR-IOV block).
+	if total <= 0 {
+		return nil
+	}
+
 	info := &model.SRIOVInfo{
 		Capable:       true,
 		TotalVFs:      total,

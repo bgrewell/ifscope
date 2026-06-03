@@ -1,9 +1,13 @@
 package model
 
-// InterfaceType is a normalized classification of a network interface.
+// InterfaceType is a normalized classification of a network interface. For
+// virtual devices without a dedicated constant below (e.g. macvlan, ipvlan,
+// vxlan, wireguard, vrf, geneve, gre), the value is the kernel's link kind
+// verbatim, so the type is always accurate. Unknown is used only when the type
+// genuinely cannot be determined.
 type InterfaceType string
 
-// Recognized interface types. Unknown is used when classification fails.
+// Recognized interface types.
 const (
 	TypePhysical InterfaceType = "physical"
 	TypeVLAN     InterfaceType = "vlan"

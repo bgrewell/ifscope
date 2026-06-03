@@ -81,6 +81,41 @@ func TestIPAddresses(t *testing.T) {
 	})
 }
 
+func TestIPAddressesVirtualKinds(t *testing.T) {
+	// Virtual link kinds without a dedicated constant must report the kernel
+	// kind verbatim, not be mislabeled physical.
+	data := []byte(`[
+	  {"ifindex":2,"ifname":"macvlan0","link_type":"ether","address":"aa:aa:aa:aa:aa:aa",
+	   "linkinfo":{"info_kind":"macvlan"}},
+	  {"ifindex":3,"ifname":"vx0","link_type":"ether","address":"bb:bb:bb:bb:bb:bb",
+	   "linkinfo":{"info_kind":"vxlan"}},
+	  {"ifindex":4,"ifname":"wg0","link_type":"none",
+	   "linkinfo":{"info_kind":"wireguard"}},
+	  {"ifindex":5,"ifname":"weird0","link_type":"ether","address":"cc:cc:cc:cc:cc:cc"}
+	]`)
+	ifaces, err := IPAddresses(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	by := map[string]model.InterfaceType{}
+	for _, i := range ifaces {
+		by[i.Name] = i.Type
+	}
+	if by["macvlan0"] != "macvlan" {
+		t.Errorf("macvlan0 type = %q, want macvlan", by["macvlan0"])
+	}
+	if by["vx0"] != "vxlan" {
+		t.Errorf("vx0 type = %q, want vxlan", by["vx0"])
+	}
+	if by["wg0"] != "wireguard" {
+		t.Errorf("wg0 type = %q, want wireguard", by["wg0"])
+	}
+	// ether, no linkinfo, no device backing → undetermined, not assumed physical.
+	if by["weird0"] != model.TypeUnknown {
+		t.Errorf("weird0 type = %q, want unknown", by["weird0"])
+	}
+}
+
 func TestIPAddressesInvalidJSON(t *testing.T) {
 	if _, err := IPAddresses([]byte("not json")); err == nil {
 		t.Fatal("expected error for invalid JSON")
