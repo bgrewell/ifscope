@@ -32,6 +32,7 @@ archives:
     files:
       - README.md
       - LICENSE
+      - NOTICE
 
 checksum:
   name_template: "checksums.txt"
@@ -47,3 +48,5 @@ changelog:
 
 release:
   draft: true
+  # Auto-flag pre-releases from the tag (e.g. -beta, -rc).
+  prerelease: auto
