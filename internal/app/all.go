@@ -28,11 +28,14 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, rw...)
 	dns, dw := o.collectDNS(ctx)
 	warnings = append(warnings, dw...)
+	bonds, bw := o.collectBonds()
+	warnings = append(warnings, bw...)
 	ovs := o.maybeOVS(ctx, &warnings, ifaces, vlans)
 
 	rep := newReport()
 	rep.Interfaces = ifaces
 	rep.VLANs = vlans
+	rep.Bonds = bonds
 	rep.PCIe = devices
 	rep.Routes = routes
 	rep.DNS = dns
@@ -43,6 +46,10 @@ func (o *Options) runAll() error {
 		renderInterfaces(ro, ifaces)
 		fmt.Fprintln(os.Stdout)
 		renderVLANs(ro, vlans)
+		if len(bonds) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderBonds(ro, bonds)
+		}
 		fmt.Fprintln(os.Stdout)
 		renderPCIe(ro, devices)
 		fmt.Fprintln(os.Stdout)

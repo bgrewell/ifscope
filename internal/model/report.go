@@ -13,6 +13,7 @@ type Report struct {
 	Host       Host         `json:"host"`
 	Interfaces []Interface  `json:"interfaces,omitempty"`
 	VLANs      []Interface  `json:"vlans,omitempty"`
+	Bonds      []Bond       `json:"bonds,omitempty"`
 	Routes     []Route      `json:"routes,omitempty"`
 	DNS        []DNS        `json:"dns,omitempty"`
 	PCIe       []PCIDevice  `json:"pcie,omitempty"`
