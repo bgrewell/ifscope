@@ -10,67 +10,112 @@ import (
 	"github.com/bgrewell/ifscope/internal/testutil"
 )
 
-func TestPCIeCollect(t *testing.T) {
-	const bus = "0000:17:00.0"
+// pciFS builds a fake PCI tree with four Ethernet devices: a kernel-bound NIC,
+// a vfio-pci (DPDK) NIC with no netdev, an unbound NIC, and a non-Ethernet
+// device that must be ignored.
+func pciFS() *sysfs.Fake {
 	fs := sysfs.NewFake()
-	base := "/sys/bus/pci/devices/" + bus
-	fs.Files[base+"/vendor"] = "0x8086\n"
-	fs.Files[base+"/device"] = "0x1592\n"
-	fs.Files[base+"/numa_node"] = "1\n"
-	fs.Files[base+"/current_link_speed"] = "16.0 GT/s PCIe\n"
-	fs.Files[base+"/current_link_width"] = "8\n"
+	fs.Dirs[pciDevices] = []string{"0000:17:00.0", "0000:43:00.2", "0000:43:00.3", "0000:00:1f.0"}
 
-	fake := run.NewFake()
-	fake.SetResult(run.FakeResult{Stdout: string(testutil.Fixture(t, "lspci/e810.txt"))}, "lspci", "-Dnn", "-s", bus)
-
-	ifaces := []model.Interface{
-		{Name: "eth0", Type: model.TypePhysical, Bus: bus, Driver: "ice"},
-		{Name: "br0", Type: model.TypeBridge}, // no PCI bus; skipped
-	}
-	devices, warnings := NewPCIe(fake, fs).Collect(context.Background(), ifaces)
-	if len(warnings) != 0 {
-		t.Fatalf("unexpected warnings: %v", warnings)
-	}
-	if len(devices) != 1 {
-		t.Fatalf("devices = %d, want 1", len(devices))
+	mk := func(bus, class, driver string) string {
+		base := pciDevices + "/" + bus
+		fs.Files[base+"/class"] = class + "\n"
+		fs.Files[base+"/vendor"] = "0x8086\n"
+		fs.Files[base+"/device"] = "0x1592\n"
+		fs.Files[base+"/numa_node"] = "0\n"
+		if driver != "" {
+			fs.Links[base+"/driver"] = "../../../bus/pci/drivers/" + driver
+		}
+		return base
 	}
 
-	d := devices[0]
-	if d.Interface != "eth0" || d.Driver != "ice" {
-		t.Errorf("device interface/driver = %q/%q", d.Interface, d.Driver)
+	// kernel NIC with a netdev
+	base := mk("0000:17:00.0", "0x020000", "ice")
+	fs.Dirs[base+"/net"] = []string{"enp23s0np0"}
+	// DPDK NIC bound to vfio-pci, no net dir
+	mk("0000:43:00.2", "0x020000", "vfio-pci")
+	// unbound NIC, no driver, no net
+	mk("0000:43:00.3", "0x020000", "")
+	// non-Ethernet device (ISA bridge) — ignored
+	mk("0000:00:1f.0", "0x060100", "lpc_ich")
+
+	return fs
+}
+
+func TestPCIeScanClassifiesBind(t *testing.T) {
+	fake := run.NewFake() // lspci absent -> non-fatal warning
+	ifaces := []model.Interface{{Name: "enp23s0np0", Bus: "0000:17:00.0", Driver: "ice"}}
+
+	devices, warnings := NewPCIe(fake, pciFS()).Collect(context.Background(), ifaces)
+
+	byBus := map[string]model.PCIDevice{}
+	for _, d := range devices {
+		byBus[d.Bus] = d
 	}
-	if d.VendorID != "8086" || d.DeviceID != "1592" {
-		t.Errorf("ids = %s:%s, want 8086:1592", d.VendorID, d.DeviceID)
+
+	if len(devices) != 3 {
+		t.Fatalf("devices = %d, want 3 (non-Ethernet excluded)", len(devices))
+	}
+
+	kernel := byBus["0000:17:00.0"]
+	if kernel.Bind != "kernel" || kernel.Interface != "enp23s0np0" {
+		t.Errorf("kernel device = %+v", kernel)
+	}
+	if kernel.NUMANode == nil || *kernel.NUMANode != 0 {
+		t.Errorf("kernel numa = %v", kernel.NUMANode)
+	}
+
+	dpdk := byBus["0000:43:00.2"]
+	if dpdk.Bind != "dpdk" || dpdk.Driver != "vfio-pci" || dpdk.Interface != "" {
+		t.Errorf("dpdk device = %+v, want bind=dpdk driver=vfio-pci no interface", dpdk)
+	}
+
+	unbound := byBus["0000:43:00.3"]
+	if unbound.Bind != "unbound" || unbound.Driver != "" {
+		t.Errorf("unbound device = %+v", unbound)
+	}
+
+	// Interface NUMA enrichment still happens for netdev-backed devices.
+	if ifaces[0].NUMANode == nil {
+		t.Errorf("interface NUMA not enriched")
+	}
+
+	// lspci missing is a single non-fatal warning.
+	if len(warnings) != 1 || warnings[0].Source != "lspci" || warnings[0].Fatal {
+		t.Fatalf("warnings = %v, want one non-fatal lspci warning", warnings)
+	}
+}
+
+func TestPCIeScanWithLspci(t *testing.T) {
+	const bus = "0000:17:00.0"
+	fs := pciFS()
+	fake := run.NewFake().SetResult(
+		run.FakeResult{Stdout: string(testutil.Fixture(t, "lspci/e810.txt"))},
+		"lspci", "-Dnn", "-s", bus,
+	)
+	ifaces := []model.Interface{{Name: "enp23s0np0", Bus: bus, Driver: "ice"}}
+
+	devices, _ := NewPCIe(fake, fs).Collect(context.Background(), ifaces)
+	var d model.PCIDevice
+	for _, x := range devices {
+		if x.Bus == bus {
+			d = x
+		}
 	}
 	if d.Description != "Intel Corporation Ethernet Controller E810-C for QSFP" {
 		t.Errorf("description = %q", d.Description)
-	}
-	if d.NUMANode == nil || *d.NUMANode != 1 {
-		t.Errorf("numa = %v, want 1", d.NUMANode)
-	}
-	if ifaces[0].NUMANode == nil || *ifaces[0].NUMANode != 1 {
-		t.Errorf("interface NUMA not enriched: %v", ifaces[0].NUMANode)
 	}
 	if ifaces[0].DeviceName == "" {
 		t.Errorf("interface DeviceName not enriched")
 	}
 }
 
-func TestPCIeCollectMissingLspci(t *testing.T) {
-	const bus = "0000:17:00.0"
-	fs := sysfs.NewFake()
-	fs.Files["/sys/bus/pci/devices/"+bus+"/numa_node"] = "-1\n"
-
-	ifaces := []model.Interface{{Name: "eth0", Bus: bus}}
-	devices, warnings := NewPCIe(run.NewFake(), fs).Collect(context.Background(), ifaces)
-
-	if len(devices) != 1 {
-		t.Fatalf("devices = %d, want 1", len(devices))
+func TestPCIeScanNoPCITree(t *testing.T) {
+	devices, warnings := NewPCIe(run.NewFake(), sysfs.NewFake()).Collect(context.Background(), nil)
+	if devices != nil {
+		t.Errorf("devices = %v, want nil", devices)
 	}
-	if devices[0].NUMANode != nil {
-		t.Errorf("numa_node -1 should be treated as unknown, got %v", devices[0].NUMANode)
-	}
-	if len(warnings) != 1 || warnings[0].Source != "lspci" || warnings[0].Fatal {
-		t.Fatalf("warnings = %v, want one non-fatal lspci warning", warnings)
+	if len(warnings) != 1 || warnings[0].Source != "sysfs" {
+		t.Fatalf("warnings = %v, want one sysfs warning", warnings)
 	}
 }

@@ -117,7 +117,7 @@ func classify(e ipAddr) model.InterfaceType {
 		return model.TypeLoopback
 	}
 
-	if e.LinkInfo != nil {
+	if e.LinkInfo != nil && e.LinkInfo.InfoKind != "" {
 		switch e.LinkInfo.InfoKind {
 		case "vlan":
 			return model.TypeVLAN
@@ -136,16 +136,23 @@ func classify(e ipAddr) model.InterfaceType {
 				return model.TypeTap
 			}
 			return model.TypeTun
+		default:
+			// A device with a kernel link kind is virtual, not physical. Report
+			// the kind verbatim (e.g. macvlan, ipvlan, vxlan, wireguard, vrf,
+			// geneve, gre) so the type is accurate rather than forced into a
+			// bucket or hidden as unknown.
+			return model.InterfaceType(e.LinkInfo.InfoKind)
 		}
 	}
 
-	// A device backed by a PCI function with no virtual linkinfo is physical.
-	// SR-IOV VF refinement (TypeVF) happens later via sysfs (physfn).
-	if e.ParentBus == "pci" || e.ParentDev != "" {
+	// A device backed by a hardware function (PCI, USB, virtio, ...) with no
+	// virtual linkinfo is physical. SR-IOV VF refinement (TypeVF) happens later
+	// via sysfs (physfn).
+	if e.ParentBus != "" || e.ParentDev != "" {
 		return model.TypePhysical
 	}
-	if e.LinkType == "ether" {
-		return model.TypePhysical
-	}
+
+	// No link kind and no device backing: classification is undetermined rather
+	// than assumed physical, to avoid reporting inaccurate information.
 	return model.TypeUnknown
 }

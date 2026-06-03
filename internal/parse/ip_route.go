@@ -10,16 +10,23 @@ import (
 
 // ipRoute mirrors one element of `ip -detail -json route`.
 type ipRoute struct {
-	Type     string   `json:"type"`
-	Dst      string   `json:"dst"`
-	Gateway  string   `json:"gateway"`
-	Dev      string   `json:"dev"`
-	Protocol string   `json:"protocol"`
-	Scope    string   `json:"scope"`
-	PrefSrc  string   `json:"prefsrc"`
-	Metric   int      `json:"metric"`
-	Table    string   `json:"table"`
-	Flags    []string `json:"flags"`
+	Type     string      `json:"type"`
+	Dst      string      `json:"dst"`
+	Gateway  string      `json:"gateway"`
+	Dev      string      `json:"dev"`
+	Protocol string      `json:"protocol"`
+	Scope    string      `json:"scope"`
+	PrefSrc  string      `json:"prefsrc"`
+	Metric   int         `json:"metric"`
+	Table    string      `json:"table"`
+	Flags    []string    `json:"flags"`
+	NextHops []ipNextHop `json:"nexthops"`
+}
+
+type ipNextHop struct {
+	Gateway string `json:"gateway"`
+	Dev     string `json:"dev"`
+	Weight  int    `json:"weight"`
 }
 
 // IPRoutes parses `ip -detail -json route` into routes. Address family is
@@ -32,7 +39,7 @@ func IPRoutes(data []byte) ([]model.Route, error) {
 
 	out := make([]model.Route, 0, len(raw))
 	for _, r := range raw {
-		out = append(out, model.Route{
+		route := model.Route{
 			Dst:      r.Dst,
 			Gateway:  r.Gateway,
 			Dev:      r.Dev,
@@ -42,17 +49,31 @@ func IPRoutes(data []byte) ([]model.Route, error) {
 			Scope:    r.Scope,
 			Src:      r.PrefSrc,
 			Family:   routeFamily(r),
-		})
+		}
+		for _, nh := range r.NextHops {
+			route.NextHops = append(route.NextHops, model.RouteNextHop{
+				Gateway: nh.Gateway,
+				Dev:     nh.Dev,
+				Weight:  nh.Weight,
+			})
+		}
+		out = append(out, route)
 	}
 	return out, nil
 }
 
-// routeFamily infers inet6 when any address in the route is IPv6.
+// routeFamily infers inet6 when any address in the route (including multipath
+// next-hop gateways) is IPv6.
 func routeFamily(r ipRoute) string {
 	if strings.Contains(r.Dst, ":") ||
 		strings.Contains(r.Gateway, ":") ||
 		strings.Contains(r.PrefSrc, ":") {
 		return "inet6"
+	}
+	for _, nh := range r.NextHops {
+		if strings.Contains(nh.Gateway, ":") {
+			return "inet6"
+		}
 	}
 	return "inet"
 }

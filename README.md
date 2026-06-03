@@ -61,7 +61,7 @@ Interfaces
 | `ifscope interfaces` | Interface table with driver/firmware/bus/speed/port/SR-IOV |
 | `ifscope vlans` | VLAN interfaces (parent, tag, addresses) |
 | `ifscope bonds` | Bonding masters with mode, active slave, and members |
-| `ifscope pcie` | PCIe network devices (driver, vendor/device, NUMA, link) |
+| `ifscope pcie` | PCIe network devices (driver, kernel binding, vendor/device, NUMA, link) |
 | `ifscope routes` | Kernel routing table |
 | `ifscope dns` | Per-link and global resolver state |
 | `ifscope ovs` | Open vSwitch bridges, ports, and VLAN tags |
@@ -138,6 +138,18 @@ access VLAN tags / trunk lists. OVS reads are attempted unprivileged first and
 retried with `sudo -n` when access is denied; pass `--no-sudo` to disable
 escalation. `--ovs` adds an OVS section (and per-interface membership in JSON)
 to the `show`, `interfaces`, and `all` views.
+
+## PCIe and DPDK / detached NICs
+
+`ifscope pcie` scans `/sys/bus/pci/devices` for Ethernet-class controllers
+rather than only kernel netdevs, so it also surfaces NICs that have been
+**detached from the kernel** — e.g. bound to `vfio-pci`/`uio_pci_generic` for
+DPDK, or left unbound. The `BIND` column classifies each device:
+
+- `kernel` — a normal kernel netdev is present
+- `dpdk` — bound to a userspace/passthrough driver, no netdev
+- `unbound` — no driver bound
+- `detached` — a driver is bound but exposes no netdev
 
 ## Connectivity tests
 
