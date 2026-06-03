@@ -17,8 +17,9 @@ func (o Options) Routes(w io.Writer, routes []model.Route) {
 		if r.Metric != 0 {
 			metric = strconv.Itoa(r.Metric)
 		}
+		gateway, dev := routeGatewayDev(r)
 		rows = append(rows, []string{
-			r.Dst, r.Gateway, r.Dev, r.Protocol, metric, r.Table, r.Scope, r.Src,
+			r.Dst, gateway, dev, r.Protocol, metric, r.Table, r.Scope, r.Src,
 		})
 	}
 	o.write(w, Table{Headers: headers, Rows: rows})
@@ -41,6 +42,26 @@ func (o Options) DNS(w io.Writer, dns []model.DNS) {
 		})
 	}
 	o.write(w, Table{Headers: headers, Rows: rows})
+}
+
+// routeGatewayDev returns the gateway and device cells for a route, falling
+// back to the multipath next-hops (one per line) when the top-level fields are
+// empty.
+func routeGatewayDev(r model.Route) (gateway, dev string) {
+	if r.Gateway != "" || r.Dev != "" || len(r.NextHops) == 0 {
+		return r.Gateway, r.Dev
+	}
+	gws := make([]string, 0, len(r.NextHops))
+	devs := make([]string, 0, len(r.NextHops))
+	for _, nh := range r.NextHops {
+		g := nh.Gateway
+		if nh.Weight > 0 {
+			g += " (w" + strconv.Itoa(nh.Weight) + ")"
+		}
+		gws = append(gws, g)
+		devs = append(devs, nh.Dev)
+	}
+	return strings.Join(gws, "\n"), strings.Join(devs, "\n")
 }
 
 // boolCell renders an optional bool as yes/no, blank when unset.

@@ -9,13 +9,14 @@ import (
 
 // PCIe renders the PCIe device table.
 func (o Options) PCIe(w io.Writer, devices []model.PCIDevice) {
-	headers := []string{"BUS", "INTERFACE", "DRIVER", "DEVICE", "VENDOR", "NUMA", "LINK"}
+	headers := []string{"BUS", "INTERFACE", "DRIVER", "BIND", "DEVICE", "VENDOR", "NUMA", "LINK"}
 	rows := make([][]string, 0, len(devices))
 	for _, d := range devices {
 		rows = append(rows, []string{
 			busDisplay(d.Bus),
 			d.Interface,
 			d.Driver,
+			d.Bind,
 			d.Description,
 			vendorCell(d),
 			numaCell(d.NUMANode),

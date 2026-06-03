@@ -60,7 +60,8 @@ Interfaces
 | `ifscope` / `ifscope show` | Interfaces + VLANs (default view) |
 | `ifscope interfaces` | Interface table with driver/firmware/bus/speed/port/SR-IOV |
 | `ifscope vlans` | VLAN interfaces (parent, tag, addresses) |
-| `ifscope pcie` | PCIe network devices (driver, vendor/device, NUMA, link) |
+| `ifscope bonds` | Bonding masters with mode, active slave, and members |
+| `ifscope pcie` | PCIe network devices (driver, kernel binding, vendor/device, NUMA, link) |
 | `ifscope routes` | Routing tables (all tables, with the table name) |
 | `ifscope rules` | Routing policy rules (source-based / policy routing) |
 | `ifscope dns` | Per-link and global resolver state |
@@ -139,6 +140,18 @@ retried with `sudo -n` when access is denied; pass `--no-sudo` to disable
 escalation. `--ovs` adds an OVS section (and per-interface membership in JSON)
 to the `show`, `interfaces`, and `all` views.
 
+## PCIe and DPDK / detached NICs
+
+`ifscope pcie` scans `/sys/bus/pci/devices` for Ethernet-class controllers
+rather than only kernel netdevs, so it also surfaces NICs that have been
+**detached from the kernel** — e.g. bound to `vfio-pci`/`uio_pci_generic` for
+DPDK, or left unbound. The `BIND` column classifies each device:
+
+- `kernel` — a normal kernel netdev is present
+- `dpdk` — bound to a userspace/passthrough driver, no netdev
+- `unbound` — no driver bound
+- `detached` — a driver is bound but exposes no netdev
+
 ## Routing tables and policy rules
 
 `ifscope routes` collects from **all** routing tables (`ip route show table all`),
@@ -205,8 +218,8 @@ Inspection commands return 0 even when optional data is missing.
 ## Known limitations
 
 - Linux only.
-- Bond/team/bridge deep inspection, network namespaces, and VRF are out of
-  scope for this release.
+- Bonds are summarized (mode, active slave, members); deeper team/bridge
+  inspection, network namespaces, and VRF are out of scope for this release.
 - Connectivity tests are reachability checks, not a network benchmark.
 
 ## Build from source
