@@ -61,7 +61,8 @@ Interfaces
 | `ifscope interfaces` | Interface table with driver/firmware/bus/speed/port/SR-IOV |
 | `ifscope vlans` | VLAN interfaces (parent, tag, addresses) |
 | `ifscope pcie` | PCIe network devices (driver, vendor/device, NUMA, link) |
-| `ifscope routes` | Kernel routing table |
+| `ifscope routes` | Routing tables (all tables, with the table name) |
+| `ifscope rules` | Routing policy rules (source-based / policy routing) |
 | `ifscope dns` | Per-link and global resolver state |
 | `ifscope ovs` | Open vSwitch bridges, ports, and VLAN tags |
 | `ifscope sriov` | SR-IOV PF/VF state |
@@ -137,6 +138,17 @@ access VLAN tags / trunk lists. OVS reads are attempted unprivileged first and
 retried with `sudo -n` when access is denied; pass `--no-sudo` to disable
 escalation. `--ovs` adds an OVS section (and per-interface membership in JSON)
 to the `show`, `interfaces`, and `all` views.
+
+## Routing tables and policy rules
+
+`ifscope routes` collects from **all** routing tables (`ip route show table all`),
+not just `main`, and shows each route's table — so `local`, `default`, and any
+custom tables used by policy routing are visible.
+
+`ifscope rules` shows the routing policy rules (`ip rule`): priority, match
+`from`/`to`, input/output interface, fwmark, and the table each rule selects.
+Together these represent **source-based / policy routing**, which the main table
+alone doesn't reveal.
 
 ## Connectivity tests
 

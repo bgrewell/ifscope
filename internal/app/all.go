@@ -26,6 +26,8 @@ func (o *Options) runAll() error {
 	ifaces, vlans, devices, warnings := o.gather(ctx, true)
 	routes, rw := o.collectRoutes(ctx)
 	warnings = append(warnings, rw...)
+	rules, rulw := o.collectRules(ctx)
+	warnings = append(warnings, rulw...)
 	dns, dw := o.collectDNS(ctx)
 	warnings = append(warnings, dw...)
 	ovs := o.maybeOVS(ctx, &warnings, ifaces, vlans)
@@ -35,6 +37,7 @@ func (o *Options) runAll() error {
 	rep.VLANs = vlans
 	rep.PCIe = devices
 	rep.Routes = routes
+	rep.Rules = rules
 	rep.DNS = dns
 	rep.OVS = ovs
 	rep.Warnings = warnings
@@ -47,6 +50,10 @@ func (o *Options) runAll() error {
 		renderPCIe(ro, devices)
 		fmt.Fprintln(os.Stdout)
 		renderRoutes(ro, routes)
+		if len(rules) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderRules(ro, rules)
+		}
 		fmt.Fprintln(os.Stdout)
 		renderDNS(ro, dns)
 		if ovs != nil {
