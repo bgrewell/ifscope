@@ -232,4 +232,6 @@ make check      # gofmt check, vet, lint, test
 
 ## License
 
-To be determined before the first public release.
+Licensed under the [Apache License, Version 2.0](LICENSE). Attribution must be
+preserved per the [NOTICE](NOTICE) file when redistributing or creating
+derivative works.
