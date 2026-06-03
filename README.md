@@ -60,6 +60,7 @@ Interfaces
 | `ifscope` / `ifscope show` | Interfaces + VLANs (default view) |
 | `ifscope interfaces` | Interface table with driver/firmware/bus/speed/port/SR-IOV |
 | `ifscope vlans` | VLAN interfaces (parent, tag, addresses) |
+| `ifscope bonds` | Bonding masters with mode, active slave, and members |
 | `ifscope pcie` | PCIe network devices (driver, kernel binding, vendor/device, NUMA, link) |
 | `ifscope routes` | Kernel routing table |
 | `ifscope dns` | Per-link and global resolver state |
@@ -205,8 +206,8 @@ Inspection commands return 0 even when optional data is missing.
 ## Known limitations
 
 - Linux only.
-- Bond/team/bridge deep inspection, network namespaces, and VRF are out of
-  scope for this release.
+- Bonds are summarized (mode, active slave, members); deeper team/bridge
+  inspection, network namespaces, and VRF are out of scope for this release.
 - Connectivity tests are reachability checks, not a network benchmark.
 
 ## Build from source

@@ -25,11 +25,14 @@ func (o *Options) runShow() error {
 	defer cancel()
 
 	ifaces, vlans, warnings := o.collectInterfaces(ctx)
+	bonds, bw := o.collectBonds()
+	warnings = append(warnings, bw...)
 	ovs := o.maybeOVS(ctx, &warnings, ifaces, vlans)
 
 	rep := newReport()
 	rep.Interfaces = ifaces
 	rep.VLANs = vlans
+	rep.Bonds = bonds
 	rep.OVS = ovs
 	rep.Warnings = warnings
 
@@ -37,6 +40,10 @@ func (o *Options) runShow() error {
 		renderInterfaces(ro, ifaces)
 		fmt.Fprintln(os.Stdout)
 		renderVLANs(ro, vlans)
+		if len(bonds) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderBonds(ro, bonds)
+		}
 		if ovs != nil {
 			fmt.Fprintln(os.Stdout)
 			renderOVS(ro, ovs)
