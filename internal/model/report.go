@@ -15,6 +15,7 @@ type Report struct {
 	VLANs      []Interface  `json:"vlans,omitempty"`
 	Bonds      []Bond       `json:"bonds,omitempty"`
 	Routes     []Route      `json:"routes,omitempty"`
+	Rules      []Rule       `json:"rules,omitempty"`
 	DNS        []DNS        `json:"dns,omitempty"`
 	PCIe       []PCIDevice  `json:"pcie,omitempty"`
 	OVS        *OVS         `json:"ovs,omitempty"`

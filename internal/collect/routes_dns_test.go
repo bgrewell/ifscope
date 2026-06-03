@@ -11,7 +11,7 @@ import (
 func TestRoutesCollect(t *testing.T) {
 	fake := run.NewFake().SetResult(
 		run.FakeResult{Stdout: string(testutil.Fixture(t, "ip/route.json"))},
-		"ip", "-detail", "-json", "route",
+		"ip", "-detail", "-json", "route", "show", "table", "all",
 	)
 	routes, warnings := NewRoutes(fake).Collect(context.Background())
 	if len(warnings) != 0 {
@@ -19,6 +19,10 @@ func TestRoutesCollect(t *testing.T) {
 	}
 	if len(routes) == 0 || routes[0].Dst != "default" {
 		t.Fatalf("routes = %v", routes)
+	}
+	// Main-table routes (table omitted by iproute2) normalize to "main".
+	if routes[0].Table != "main" {
+		t.Errorf("table = %q, want main", routes[0].Table)
 	}
 }
 
