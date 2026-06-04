@@ -56,6 +56,8 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, quw...)
 	irqs, iw := o.collectIRQ()
 	warnings = append(warnings, iw...)
+	ptps, ptw := o.collectPTP(ctx)
+	warnings = append(warnings, ptw...)
 	mcast, mw := o.collectMulticast(ctx)
 	warnings = append(warnings, mw...)
 	stats, sw := o.collectStats(ctx)
@@ -87,6 +89,7 @@ func (o *Options) runAll() error {
 	rep.Offloads = offloads
 	rep.Queues = queues
 	rep.IRQs = irqs
+	rep.PTP = ptps
 	rep.Multicast = mcast
 	rep.Netns = netns
 	rep.Stats = stats
@@ -164,6 +167,10 @@ func (o *Options) runAll() error {
 		if len(irqs) > 0 {
 			fmt.Fprintln(os.Stdout)
 			renderIRQ(ro, irqs)
+		}
+		if len(ptps) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderPTP(ro, ptps)
 		}
 		if len(mcast) > 0 {
 			fmt.Fprintln(os.Stdout)

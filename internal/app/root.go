@@ -66,6 +66,7 @@ func newRootCommand(o *Options) *cobra.Command {
 		newOffloadsCommand(o),
 		newQueuesCommand(o),
 		newIRQCommand(o),
+		newPTPCommand(o),
 		newMulticastCommand(o),
 		newStatsCommand(o),
 		newSocketsCommand(o),

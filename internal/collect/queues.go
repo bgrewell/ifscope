@@ -2,6 +2,7 @@ package collect
 
 import (
 	"context"
+	"strings"
 
 	"github.com/bgrewell/ifscope/internal/model"
 	"github.com/bgrewell/ifscope/internal/parse"
@@ -47,9 +48,54 @@ func (c *Queues) Collect(ctx context.Context) ([]model.Queues, []model.Warning) 
 			q.RxRing, q.TxRing = parse.EthtoolRings(gout)
 			got = true
 		}
+		if cout, _, cerr := c.Runner.Run(ctx, ethtoolCmd, "-c", name); cerr == nil {
+			co := parse.EthtoolCoalesce(cout)
+			q.RxUsecs, q.TxUsecs = co.RxUsecs, co.TxUsecs
+			q.AdaptiveRx, q.AdaptiveTx = co.AdaptiveRx, co.AdaptiveTx
+			got = true
+		}
+		if xout, _, xerr := c.Runner.Run(ctx, ethtoolCmd, "-x", name); xerr == nil {
+			q.RSSRings = parse.EthtoolRSSRings(xout)
+		}
+		q.RPSQueues, q.XPSQueues = c.steeringCounts(name)
+
 		if got {
 			out = append(out, q)
 		}
 	}
 	return out, nil
+}
+
+// steeringCounts counts the rx queues with a non-zero RPS mask and tx queues
+// with a non-zero XPS mask under /sys/class/net/<name>/queues.
+func (c *Queues) steeringCounts(name string) (rps, xps int) {
+	entries, err := c.FS.ReadDir("/sys/class/net/" + name + "/queues")
+	if err != nil {
+		return 0, 0
+	}
+	for _, e := range entries {
+		q := e.Name()
+		switch {
+		case strings.HasPrefix(q, "rx-"):
+			if v, err := sysfs.ReadString(c.FS, "/sys/class/net/"+name+"/queues/"+q+"/rps_cpus"); err == nil && maskNonZero(v) {
+				rps++
+			}
+		case strings.HasPrefix(q, "tx-"):
+			if v, err := sysfs.ReadString(c.FS, "/sys/class/net/"+name+"/queues/"+q+"/xps_cpus"); err == nil && maskNonZero(v) {
+				xps++
+			}
+		}
+	}
+	return rps, xps
+}
+
+// maskNonZero reports whether a sysfs CPU bitmask (e.g. "00000000,00000000")
+// has any bit set.
+func maskNonZero(mask string) bool {
+	for _, r := range mask {
+		if r != '0' && r != ',' && r != ' ' && r != '\n' {
+			return true
+		}
+	}
+	return false
 }
