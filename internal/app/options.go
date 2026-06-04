@@ -34,6 +34,10 @@ type Options struct {
 	NoOVS  bool
 	NoSudo bool
 
+	// Cross-cutting
+	Watch time.Duration
+	Netns string
+
 	// Connectivity (bound on the test command)
 	PingTarget       string
 	DNSTarget        string
@@ -69,4 +73,7 @@ func (o *Options) bindGlobal(cmd *cobra.Command) {
 	f.BoolVar(&o.OVS, "ovs", false, "include Open vSwitch data")
 	f.BoolVar(&o.NoOVS, "no-ovs", false, "skip Open vSwitch data")
 	f.BoolVar(&o.NoSudo, "no-sudo", false, "never escalate with sudo")
+
+	f.DurationVar(&o.Watch, "watch", 0, "refresh the view on this interval (e.g. 2s); Ctrl-C to stop")
+	f.StringVar(&o.Netns, "netns", "", "run inside the named network namespace (needs root)")
 }
