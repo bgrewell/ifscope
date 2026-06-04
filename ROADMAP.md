@@ -28,18 +28,22 @@ Notes from live validation (in LXD):
   than `-f json` (object/array-ambiguous). Verified with two lldpd nodes on a
   bridge with LLDP forwarding enabled.
 
-## Tier 3 — planned (advanced / niche)
+## Tier 3 — core delivered
 
-Delivered so far: `qdisc` (root discipline per device), `offloads`.
+Delivered: `qdisc` (root discipline per device), `offloads`, `queues`
+(channels + ring sizes), `irq` (NIC interrupt CPU affinity), `multicast`
+(IP group memberships).
 
-| View | Source | Key fields | Effort | Notes |
-| --- | --- | --- | --- | --- |
-| `queues` — channels / RSS / rings | `ethtool -l` (channels), `-x` (RSS), `-g` (ring), `-c` (coalesce) | combined/rx/tx queues, RSS indirection, ring sizes, coalesce usecs | M | Per-NIC; several ethtool calls. |
-| IRQ / RPS / XPS affinity | `/proc/interrupts`, `/proc/irq/*/smp_affinity_list`, `/sys/class/net/*/queues/*/{rps,xps}_cpus` | per-queue IRQ→CPU, RPS/XPS CPU masks | L | Correlate IRQs to NIC queues to CPUs/NUMA. |
-| multicast / MDB | `ip -json maddr`, `bridge -json mdb` | group, dev, users; bridge mdb entries | S | |
-| `wifi` | `iw dev`, `iw <dev> link` | SSID, freq, signal, bitrate, mode | S | Needs `iw`; low priority for a server tool. |
-| PTP / hw timestamping | `ethtool -T <dev>` | PHC index, tx/rx timestamp capabilities | S | Telco/finance niche. |
-| qdisc class/filter hierarchy | `tc -json class/filter show dev <d>` | class rate/ceil, filter rules | M | Deepens the `qdisc` view beyond the root discipline. |
+Remaining / optional (lower priority):
+
+| View | Source | Notes |
+| --- | --- | --- |
+| RSS / coalesce (extend `queues`) | `ethtool -x` (RSS indirection), `-c` (coalesce) | Adds RSS table + interrupt coalescing to the queues view. |
+| RPS / XPS (extend `irq`) | `/sys/class/net/*/queues/*/{rps,xps}_cpus` | Software steering masks; usually disabled (0). |
+| bridge MDB (extend `multicast`) | `bridge -json mdb` | Multicast forwarding DB; needs a snooping bridge to exercise. |
+| qdisc class/filter hierarchy | `tc -json class/filter show dev <d>` | Deepens `qdisc` beyond the root discipline. |
+| `wifi` | `iw dev`, `iw <dev> link` | Niche for a server tool; needs a wireless NIC. |
+| PTP / hw timestamping | `ethtool -T <dev>` | Telco/finance niche. |
 
 ## Cross-cutting / future
 
