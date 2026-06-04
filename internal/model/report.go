@@ -30,6 +30,7 @@ type Report struct {
 	Offloads    []Offloads        `json:"offloads,omitempty"`
 	Queues      []Queues          `json:"queues,omitempty"`
 	IRQs        []IRQ             `json:"irqs,omitempty"`
+	PTP         []PTP             `json:"ptp,omitempty"`
 	Multicast   []MulticastGroup  `json:"multicast,omitempty"`
 	OVS         *OVS              `json:"ovs,omitempty"`
 	Netns       []Netns           `json:"netns,omitempty"`

@@ -34,16 +34,16 @@ Delivered: `qdisc` (root discipline per device), `offloads`, `queues`
 (channels + ring sizes), `irq` (NIC interrupt CPU affinity), `multicast`
 (IP group memberships).
 
-Remaining / optional (lower priority):
+Also delivered: `queues` now includes RSS ring count, interrupt coalescing,
+and RPS/XPS steering counts; `ptp` (hardware timestamping / PTP).
+
+Remaining / optional:
 
 | View | Source | Notes |
 | --- | --- | --- |
-| RSS / coalesce (extend `queues`) | `ethtool -x` (RSS indirection), `-c` (coalesce) | Adds RSS table + interrupt coalescing to the queues view. |
-| RPS / XPS (extend `irq`) | `/sys/class/net/*/queues/*/{rps,xps}_cpus` | Software steering masks; usually disabled (0). |
 | bridge MDB (extend `multicast`) | `bridge -json mdb` | Multicast forwarding DB; needs a snooping bridge to exercise. |
 | qdisc class/filter hierarchy | `tc -json class/filter show dev <d>` | Deepens `qdisc` beyond the root discipline. |
-| `wifi` | `iw dev`, `iw <dev> link` | Niche for a server tool; needs a wireless NIC. |
-| PTP / hw timestamping | `ethtool -T <dev>` | Telco/finance niche. |
+| `wifi` | `iw dev`, `iw <dev> link` | Deferred until a wireless NIC is available to test against. |
 
 ## Cross-cutting / future
 
