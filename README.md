@@ -63,13 +63,16 @@ Interfaces
 | `ifscope bonds` | Bonding masters with mode, active slave, and members |
 | `ifscope bridges` | Linux bridges with STP state and member ports |
 | `ifscope pcie` | PCIe network devices (driver, kernel binding, vendor/device, NUMA, link) |
+| `ifscope devlink` | devlink ports (PF/VF flavour, switchdev) |
 | `ifscope routes` | Routing tables (all tables, with the table name) |
 | `ifscope rules` | Routing policy rules (source-based / policy routing) |
 | `ifscope neighbors` | ARP/NDP neighbor table (alias `arp`) |
+| `ifscope fdb` | Bridge forwarding database (MAC table) |
 | `ifscope dns` | Per-link and global resolver state |
 | `ifscope ovs` | Open vSwitch bridges, ports, and VLAN tags |
 | `ifscope sriov` | SR-IOV PF/VF state |
 | `ifscope stats` | Per-interface traffic and error counters |
+| `ifscope sockets` | Listening TCP/UDP sockets (alias `ss`) |
 | `ifscope netns` | Network namespaces |
 | `ifscope test` | Gateway / internet / DNS ping, HTTPS GET (+ optional throughput) |
 | `ifscope all` | Every inspection table |

@@ -36,8 +36,14 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, brw...)
 	neighbors, nw := o.collectNeighbors(ctx)
 	warnings = append(warnings, nw...)
+	fdb, fw := o.collectFDB(ctx)
+	warnings = append(warnings, fw...)
+	devlink, dlw := o.collectDevlink(ctx)
+	warnings = append(warnings, dlw...)
 	stats, sw := o.collectStats(ctx)
 	warnings = append(warnings, sw...)
+	sockets, sockw := o.collectSockets(ctx)
+	warnings = append(warnings, sockw...)
 	netns, nsw := o.collectNetns(ctx)
 	warnings = append(warnings, nsw...)
 	ovs := o.maybeOVS(ctx, &warnings, ifaces, vlans)
@@ -48,13 +54,16 @@ func (o *Options) runAll() error {
 	rep.Bonds = bonds
 	rep.Bridges = bridges
 	rep.PCIe = devices
+	rep.Devlink = devlink
 	rep.Routes = routes
 	rep.Rules = rules
 	rep.Neighbors = neighbors
+	rep.FDB = fdb
 	rep.DNS = dns
 	rep.OVS = ovs
 	rep.Netns = netns
 	rep.Stats = stats
+	rep.Sockets = sockets
 	rep.Warnings = warnings
 
 	if err := o.emit(rep, func(ro render.Options) {
@@ -71,6 +80,10 @@ func (o *Options) runAll() error {
 		}
 		fmt.Fprintln(os.Stdout)
 		renderPCIe(ro, devices)
+		if len(devlink) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderDevlink(ro, devlink)
+		}
 		fmt.Fprintln(os.Stdout)
 		renderRoutes(ro, routes)
 		if len(rules) > 0 {
@@ -79,6 +92,10 @@ func (o *Options) runAll() error {
 		}
 		fmt.Fprintln(os.Stdout)
 		renderNeighbors(ro, neighbors)
+		if len(fdb) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderFDB(ro, fdb)
+		}
 		fmt.Fprintln(os.Stdout)
 		renderDNS(ro, dns)
 		if ovs != nil {
@@ -91,6 +108,8 @@ func (o *Options) runAll() error {
 		}
 		fmt.Fprintln(os.Stdout)
 		renderStats(ro, stats)
+		fmt.Fprintln(os.Stdout)
+		renderSockets(ro, sockets)
 	}); err != nil {
 		return err
 	}
