@@ -68,6 +68,7 @@ Interfaces
 | `ifscope routes` | Routing tables (all tables, with the table name) |
 | `ifscope rules` | Routing policy rules (source-based / policy routing) |
 | `ifscope neighbors` | ARP/NDP neighbor table (alias `arp`) |
+| `ifscope lldp` | LLDP link-layer neighbors (chassis, port, mgmt IP) |
 | `ifscope fdb` | Bridge forwarding database (MAC table) |
 | `ifscope dns` | Per-link and global resolver state |
 | `ifscope ovs` | Open vSwitch bridges, ports, and VLAN tags |

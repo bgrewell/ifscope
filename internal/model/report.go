@@ -19,6 +19,7 @@ type Report struct {
 	Routes     []Route          `json:"routes,omitempty"`
 	Rules      []Rule           `json:"rules,omitempty"`
 	Neighbors  []Neighbor       `json:"neighbors,omitempty"`
+	LLDP       []LLDPNeighbor   `json:"lldp,omitempty"`
 	FDB        []FDBEntry       `json:"fdb,omitempty"`
 	DNS        []DNS            `json:"dns,omitempty"`
 	PCIe       []PCIDevice      `json:"pcie,omitempty"`

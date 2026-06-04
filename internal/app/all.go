@@ -38,6 +38,8 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, tw...)
 	neighbors, nw := o.collectNeighbors(ctx)
 	warnings = append(warnings, nw...)
+	lldp, lw := o.collectLLDP(ctx)
+	warnings = append(warnings, lw...)
 	fdb, fw := o.collectFDB(ctx)
 	warnings = append(warnings, fw...)
 	devlink, dlw := o.collectDevlink(ctx)
@@ -61,6 +63,7 @@ func (o *Options) runAll() error {
 	rep.Routes = routes
 	rep.Rules = rules
 	rep.Neighbors = neighbors
+	rep.LLDP = lldp
 	rep.FDB = fdb
 	rep.DNS = dns
 	rep.OVS = ovs
@@ -99,6 +102,10 @@ func (o *Options) runAll() error {
 		}
 		fmt.Fprintln(os.Stdout)
 		renderNeighbors(ro, neighbors)
+		if len(lldp) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderLLDP(ro, lldp)
+		}
 		if len(fdb) > 0 {
 			fmt.Fprintln(os.Stdout)
 			renderFDB(ro, fdb)

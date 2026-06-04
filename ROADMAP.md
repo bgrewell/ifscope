@@ -19,15 +19,19 @@ optional tool is absent (warning, not failure).
 
 | View | Source | Key fields | Effort | Notes |
 | --- | --- | --- | --- | --- |
-| `lldp` — link-layer neighbors | `lldpcli show neighbors -f json` (lldpd) | local port, remote chassis/sysname, port id/desc, mgmt IP, VLAN | M | Optional dep (lldpd); huge for datacenter topology. Degrade if absent. |
 | WireGuard peers | `wg show all dump` | peer key, endpoint, allowed-ips, handshake | S | Extends the `tunnels` view (it already lists wireguard devices); peers need `wg` (+root). |
 | bridge VLANs | `bridge -json vlan show` | port, vlan ids, pvid, flags | S | Could fold into the `bridges` view or `fdb`. |
 
-Delivered from the original Tier 2 list: `devlink`, `fdb`, `sockets`, `tunnels`.
+Delivered from the original Tier 2 list: `devlink`, `fdb`, `sockets`,
+`tunnels`, `lldp`.
 
-Note: the `tunnels` view parses `ip -d link` **text**, not `-json` — iproute2
-emits malformed JSON for vxlan (a stray `fan-map` token). Verified in an LXD
-container with live vxlan/gre/geneve interfaces.
+Notes from live validation (in LXD):
+- The `tunnels` view parses `ip -d link` **text**, not `-json` — iproute2
+  emits malformed JSON for vxlan (a stray `fan-map` token). Verified with live
+  vxlan/gre/geneve interfaces.
+- The `lldp` view uses `lldpcli -f json0` (array-wrapped, unambiguous) rather
+  than `-f json` (object/array-ambiguous). Verified with two lldpd nodes on a
+  bridge with LLDP forwarding enabled.
 
 ## Tier 3 — planned (advanced / niche)
 

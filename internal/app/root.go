@@ -55,6 +55,7 @@ func newRootCommand(o *Options) *cobra.Command {
 		newRoutesCommand(o),
 		newRulesCommand(o),
 		newNeighborsCommand(o),
+		newLLDPCommand(o),
 		newFDBCommand(o),
 		newDNSCommand(o),
 		newOVSCommand(o),
