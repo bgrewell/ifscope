@@ -26,6 +26,8 @@ type Report struct {
 	DNS         []DNS             `json:"dns,omitempty"`
 	PCIe        []PCIDevice       `json:"pcie,omitempty"`
 	Devlink     []DevlinkPort     `json:"devlink,omitempty"`
+	Qdiscs      []Qdisc           `json:"qdiscs,omitempty"`
+	Offloads    []Offloads        `json:"offloads,omitempty"`
 	OVS         *OVS              `json:"ovs,omitempty"`
 	Netns       []Netns           `json:"netns,omitempty"`
 	Stats       []InterfaceStats  `json:"stats,omitempty"`

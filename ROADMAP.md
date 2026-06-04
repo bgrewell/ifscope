@@ -30,15 +30,16 @@ Notes from live validation (in LXD):
 
 ## Tier 3 — planned (advanced / niche)
 
+Delivered so far: `qdisc` (root discipline per device), `offloads`.
+
 | View | Source | Key fields | Effort | Notes |
 | --- | --- | --- | --- | --- |
-| `qdisc` — traffic shaping / QoS | `tc -json qdisc/class/filter show dev <d>` | qdisc kind (fq_codel/htb/mq/…), handle, parent, class rate/ceil, filters | M | The shaping/QoS view. One call per device; summarize hierarchy. |
 | `queues` — channels / RSS / rings | `ethtool -l` (channels), `-x` (RSS), `-g` (ring), `-c` (coalesce) | combined/rx/tx queues, RSS indirection, ring sizes, coalesce usecs | M | Per-NIC; several ethtool calls. |
-| `offloads` — NIC features | `ethtool -k <dev>` | GRO/GSO/TSO/LRO/checksum/rx-vlan… on/off/fixed | S | Simple key/value table. |
 | IRQ / RPS / XPS affinity | `/proc/interrupts`, `/proc/irq/*/smp_affinity_list`, `/sys/class/net/*/queues/*/{rps,xps}_cpus` | per-queue IRQ→CPU, RPS/XPS CPU masks | L | Correlate IRQs to NIC queues to CPUs/NUMA. |
 | multicast / MDB | `ip -json maddr`, `bridge -json mdb` | group, dev, users; bridge mdb entries | S | |
 | `wifi` | `iw dev`, `iw <dev> link` | SSID, freq, signal, bitrate, mode | S | Needs `iw`; low priority for a server tool. |
 | PTP / hw timestamping | `ethtool -T <dev>` | PHC index, tx/rx timestamp capabilities | S | Telco/finance niche. |
+| qdisc class/filter hierarchy | `tc -json class/filter show dev <d>` | class rate/ceil, filter rules | M | Deepens the `qdisc` view beyond the root discipline. |
 
 ## Cross-cutting / future
 

@@ -75,6 +75,8 @@ Interfaces
 | `ifscope dns` | Per-link and global resolver state |
 | `ifscope ovs` | Open vSwitch bridges, ports, and VLAN tags |
 | `ifscope sriov` | SR-IOV PF/VF state |
+| `ifscope qdisc` | Per-interface queueing discipline / traffic shaping |
+| `ifscope offloads` | NIC offload features (checksum, TSO, GSO, GRO, …) |
 | `ifscope stats` | Per-interface traffic and error counters |
 | `ifscope sockets` | Listening TCP/UDP sockets (alias `ss`) |
 | `ifscope netns` | Network namespaces |
