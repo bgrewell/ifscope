@@ -20,10 +20,14 @@ optional tool is absent (warning, not failure).
 | View | Source | Key fields | Effort | Notes |
 | --- | --- | --- | --- | --- |
 | `lldp` — link-layer neighbors | `lldpcli show neighbors -f json` (lldpd) | local port, remote chassis/sysname, port id/desc, mgmt IP, VLAN | M | Optional dep (lldpd); huge for datacenter topology. Degrade if absent. |
-| `tunnels` — overlay/tunnel endpoints | `ip -d -json link` (info_data) + `wg show <dev> dump` | type (vxlan/gre/geneve/wireguard), local, remote, VNI/key, port, ttl | M | WireGuard peers need `wg` (+root). Builds on the type classification already done. |
+| WireGuard peers | `wg show all dump` | peer key, endpoint, allowed-ips, handshake | S | Extends the `tunnels` view (it already lists wireguard devices); peers need `wg` (+root). |
 | bridge VLANs | `bridge -json vlan show` | port, vlan ids, pvid, flags | S | Could fold into the `bridges` view or `fdb`. |
 
-Delivered from the original Tier 2 list: `devlink`, `fdb`, `sockets`.
+Delivered from the original Tier 2 list: `devlink`, `fdb`, `sockets`, `tunnels`.
+
+Note: the `tunnels` view parses `ip -d link` **text**, not `-json` — iproute2
+emits malformed JSON for vxlan (a stray `fan-map` token). Verified in an LXD
+container with live vxlan/gre/geneve interfaces.
 
 ## Tier 3 — planned (advanced / niche)
 

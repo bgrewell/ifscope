@@ -15,6 +15,7 @@ type Report struct {
 	VLANs      []Interface      `json:"vlans,omitempty"`
 	Bonds      []Bond           `json:"bonds,omitempty"`
 	Bridges    []Bridge         `json:"bridges,omitempty"`
+	Tunnels    []Tunnel         `json:"tunnels,omitempty"`
 	Routes     []Route          `json:"routes,omitempty"`
 	Rules      []Rule           `json:"rules,omitempty"`
 	Neighbors  []Neighbor       `json:"neighbors,omitempty"`
