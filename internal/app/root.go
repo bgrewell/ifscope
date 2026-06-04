@@ -49,6 +49,7 @@ func newRootCommand(o *Options) *cobra.Command {
 		newVLANsCommand(o),
 		newBondsCommand(o),
 		newBridgesCommand(o),
+		newTunnelsCommand(o),
 		newPCIeCommand(o),
 		newDevlinkCommand(o),
 		newRoutesCommand(o),

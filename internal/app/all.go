@@ -34,6 +34,8 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, bw...)
 	bridges, brw := o.collectBridges()
 	warnings = append(warnings, brw...)
+	tunnels, tw := o.collectTunnels(ctx)
+	warnings = append(warnings, tw...)
 	neighbors, nw := o.collectNeighbors(ctx)
 	warnings = append(warnings, nw...)
 	fdb, fw := o.collectFDB(ctx)
@@ -53,6 +55,7 @@ func (o *Options) runAll() error {
 	rep.VLANs = vlans
 	rep.Bonds = bonds
 	rep.Bridges = bridges
+	rep.Tunnels = tunnels
 	rep.PCIe = devices
 	rep.Devlink = devlink
 	rep.Routes = routes
@@ -77,6 +80,10 @@ func (o *Options) runAll() error {
 		if len(bridges) > 0 {
 			fmt.Fprintln(os.Stdout)
 			renderBridges(ro, bridges)
+		}
+		if len(tunnels) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderTunnels(ro, tunnels)
 		}
 		fmt.Fprintln(os.Stdout)
 		renderPCIe(ro, devices)
