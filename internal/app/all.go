@@ -48,6 +48,10 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, fw...)
 	devlink, dlw := o.collectDevlink(ctx)
 	warnings = append(warnings, dlw...)
+	qdiscs, qw := o.collectQdisc(ctx)
+	warnings = append(warnings, qw...)
+	offloads, ow := o.collectOffloads(ctx)
+	warnings = append(warnings, ow...)
 	stats, sw := o.collectStats(ctx)
 	warnings = append(warnings, sw...)
 	sockets, sockw := o.collectSockets(ctx)
@@ -73,6 +77,8 @@ func (o *Options) runAll() error {
 	rep.FDB = fdb
 	rep.DNS = dns
 	rep.OVS = ovs
+	rep.Qdiscs = qdiscs
+	rep.Offloads = offloads
 	rep.Netns = netns
 	rep.Stats = stats
 	rep.Sockets = sockets
@@ -133,6 +139,14 @@ func (o *Options) runAll() error {
 		if len(netns) > 0 {
 			fmt.Fprintln(os.Stdout)
 			renderNetns(ro, netns)
+		}
+		if len(qdiscs) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderQdisc(ro, qdiscs)
+		}
+		if len(offloads) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderOffloads(ro, offloads)
 		}
 		fmt.Fprintln(os.Stdout)
 		renderStats(ro, stats)

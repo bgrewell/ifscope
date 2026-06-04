@@ -62,6 +62,8 @@ func newRootCommand(o *Options) *cobra.Command {
 		newDNSCommand(o),
 		newOVSCommand(o),
 		newSRIOVCommand(o),
+		newQdiscCommand(o),
+		newOffloadsCommand(o),
 		newStatsCommand(o),
 		newSocketsCommand(o),
 		newNetnsCommand(o),
