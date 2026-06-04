@@ -34,8 +34,12 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, bw...)
 	bridges, brw := o.collectBridges()
 	warnings = append(warnings, brw...)
+	bvlans, bvw := o.collectBridgeVLANs(ctx)
+	warnings = append(warnings, bvw...)
 	tunnels, tw := o.collectTunnels(ctx)
 	warnings = append(warnings, tw...)
+	wg, wgw := o.collectWireGuard(ctx)
+	warnings = append(warnings, wgw...)
 	neighbors, nw := o.collectNeighbors(ctx)
 	warnings = append(warnings, nw...)
 	lldp, lw := o.collectLLDP(ctx)
@@ -57,7 +61,9 @@ func (o *Options) runAll() error {
 	rep.VLANs = vlans
 	rep.Bonds = bonds
 	rep.Bridges = bridges
+	rep.BridgeVLANs = bvlans
 	rep.Tunnels = tunnels
+	rep.WireGuard = wg
 	rep.PCIe = devices
 	rep.Devlink = devlink
 	rep.Routes = routes
@@ -84,9 +90,17 @@ func (o *Options) runAll() error {
 			fmt.Fprintln(os.Stdout)
 			renderBridges(ro, bridges)
 		}
+		if len(bvlans) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderBridgeVLANs(ro, bvlans)
+		}
 		if len(tunnels) > 0 {
 			fmt.Fprintln(os.Stdout)
 			renderTunnels(ro, tunnels)
+		}
+		if len(wg) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderWireGuard(ro, wg)
 		}
 		fmt.Fprintln(os.Stdout)
 		renderPCIe(ro, devices)

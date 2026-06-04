@@ -15,15 +15,10 @@ optional tool is absent (warning, not failure).
 `rules` (policy routing), `neighbors` (ARP/NDP), `fdb`, `dns`, `ovs`, `sriov`,
 `stats`, `sockets`, `netns`, `test`, `all`.
 
-## Tier 2 — planned (remaining)
+## Tier 2 — complete
 
-| View | Source | Key fields | Effort | Notes |
-| --- | --- | --- | --- | --- |
-| WireGuard peers | `wg show all dump` | peer key, endpoint, allowed-ips, handshake | S | Extends the `tunnels` view (it already lists wireguard devices); peers need `wg` (+root). |
-| bridge VLANs | `bridge -json vlan show` | port, vlan ids, pvid, flags | S | Could fold into the `bridges` view or `fdb`. |
-
-Delivered from the original Tier 2 list: `devlink`, `fdb`, `sockets`,
-`tunnels`, `lldp`.
+All Tier 2 views are delivered: `devlink`, `fdb`, `sockets`, `tunnels`, `lldp`,
+`wireguard`, `bridge-vlans`.
 
 Notes from live validation (in LXD):
 - The `tunnels` view parses `ip -d link` **text**, not `-json` — iproute2

@@ -62,7 +62,9 @@ Interfaces
 | `ifscope vlans` | VLAN interfaces (parent, tag, addresses) |
 | `ifscope bonds` | Bonding masters with mode, active slave, and members |
 | `ifscope bridges` | Linux bridges with STP state and member ports |
+| `ifscope bridge-vlans` | Bridge VLAN-filtering entries per port (alias `bvlan`) |
 | `ifscope tunnels` | Overlay/tunnel interfaces (VXLAN, GENEVE, GRE, …) |
+| `ifscope wireguard` | WireGuard interfaces and peers (alias `wg`) |
 | `ifscope pcie` | PCIe network devices (driver, kernel binding, vendor/device, NUMA, link) |
 | `ifscope devlink` | devlink ports (PF/VF flavour, switchdev) |
 | `ifscope routes` | Routing tables (all tables, with the table name) |
