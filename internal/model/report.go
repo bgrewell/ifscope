@@ -9,18 +9,22 @@ type Host struct {
 // it as a human table view or as JSON. The Version field versions the JSON
 // schema so consumers can adapt to future changes.
 type Report struct {
-	Version    string       `json:"version"`
-	Host       Host         `json:"host"`
-	Interfaces []Interface  `json:"interfaces,omitempty"`
-	VLANs      []Interface  `json:"vlans,omitempty"`
-	Bonds      []Bond       `json:"bonds,omitempty"`
-	Routes     []Route      `json:"routes,omitempty"`
-	Rules      []Rule       `json:"rules,omitempty"`
-	DNS        []DNS        `json:"dns,omitempty"`
-	PCIe       []PCIDevice  `json:"pcie,omitempty"`
-	OVS        *OVS         `json:"ovs,omitempty"`
-	Tests      []TestResult `json:"tests,omitempty"`
-	Warnings   []Warning    `json:"warnings,omitempty"`
+	Version    string           `json:"version"`
+	Host       Host             `json:"host"`
+	Interfaces []Interface      `json:"interfaces,omitempty"`
+	VLANs      []Interface      `json:"vlans,omitempty"`
+	Bonds      []Bond           `json:"bonds,omitempty"`
+	Bridges    []Bridge         `json:"bridges,omitempty"`
+	Routes     []Route          `json:"routes,omitempty"`
+	Rules      []Rule           `json:"rules,omitempty"`
+	Neighbors  []Neighbor       `json:"neighbors,omitempty"`
+	DNS        []DNS            `json:"dns,omitempty"`
+	PCIe       []PCIDevice      `json:"pcie,omitempty"`
+	OVS        *OVS             `json:"ovs,omitempty"`
+	Netns      []Netns          `json:"netns,omitempty"`
+	Stats      []InterfaceStats `json:"stats,omitempty"`
+	Tests      []TestResult     `json:"tests,omitempty"`
+	Warnings   []Warning        `json:"warnings,omitempty"`
 }
 
 // AddWarning appends a warning to the report.
