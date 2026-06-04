@@ -52,6 +52,12 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, qw...)
 	offloads, ow := o.collectOffloads(ctx)
 	warnings = append(warnings, ow...)
+	queues, quw := o.collectQueues(ctx)
+	warnings = append(warnings, quw...)
+	irqs, iw := o.collectIRQ()
+	warnings = append(warnings, iw...)
+	mcast, mw := o.collectMulticast(ctx)
+	warnings = append(warnings, mw...)
 	stats, sw := o.collectStats(ctx)
 	warnings = append(warnings, sw...)
 	sockets, sockw := o.collectSockets(ctx)
@@ -79,6 +85,9 @@ func (o *Options) runAll() error {
 	rep.OVS = ovs
 	rep.Qdiscs = qdiscs
 	rep.Offloads = offloads
+	rep.Queues = queues
+	rep.IRQs = irqs
+	rep.Multicast = mcast
 	rep.Netns = netns
 	rep.Stats = stats
 	rep.Sockets = sockets
@@ -147,6 +156,18 @@ func (o *Options) runAll() error {
 		if len(offloads) > 0 {
 			fmt.Fprintln(os.Stdout)
 			renderOffloads(ro, offloads)
+		}
+		if len(queues) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderQueues(ro, queues)
+		}
+		if len(irqs) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderIRQ(ro, irqs)
+		}
+		if len(mcast) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderMulticast(ro, mcast)
 		}
 		fmt.Fprintln(os.Stdout)
 		renderStats(ro, stats)

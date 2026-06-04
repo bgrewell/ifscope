@@ -77,6 +77,9 @@ Interfaces
 | `ifscope sriov` | SR-IOV PF/VF state |
 | `ifscope qdisc` | Per-interface queueing discipline / traffic shaping |
 | `ifscope offloads` | NIC offload features (checksum, TSO, GSO, GRO, …) |
+| `ifscope queues` | Per-interface channels (queues) and ring sizes |
+| `ifscope irq` | NIC interrupt CPU affinity (alias `affinity`) |
+| `ifscope multicast` | IP multicast group memberships (alias `maddr`) |
 | `ifscope stats` | Per-interface traffic and error counters |
 | `ifscope sockets` | Listening TCP/UDP sockets (alias `ss`) |
 | `ifscope netns` | Network namespaces |
