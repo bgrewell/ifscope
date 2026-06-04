@@ -90,8 +90,8 @@ Interfaces
 | `ifscope all` | Every inspection table |
 | `ifscope version` | Build metadata |
 
-Planned additional views (LLDP, tunnels, devlink, qdisc/shaping, and more) are
-tracked in [ROADMAP.md](ROADMAP.md).
+Remaining optional items (tc filters, wifi) are tracked in
+[ROADMAP.md](ROADMAP.md).
 
 ### Global flags
 
@@ -110,7 +110,12 @@ tracked in [ROADMAP.md](ROADMAP.md).
 --physical / --virtual / --pf / --vf   interface-class filters
 --ovs / --no-ovs  include / skip Open vSwitch data
 --no-sudo         never escalate with sudo (OVS)
+--watch DURATION  refresh the view on an interval (e.g. --watch 2s); Ctrl-C to stop
+--netns NAME      run inside the named network namespace (needs root)
 ```
+
+`--netns` re-executes ifscope inside the namespace (via `ip netns exec`), so
+**every** view — command-based and sysfs-based — reflects that namespace.
 
 Legacy `netcheck` short flags are preserved as aliases: `-I` interfaces,
 `-V` vlans, `-D` dns, `-R` routes, `-P` pcie, `-t` test, `-j` json, `-u` up,

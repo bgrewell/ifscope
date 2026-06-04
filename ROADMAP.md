@@ -48,12 +48,16 @@ Remaining / optional:
 Note: `tc class` JSON needs a recent iproute2 (older versions emit text for
 `class show`); ifscope degrades to a warning on those.
 
-## Cross-cutting / future
+## Cross-cutting
 
-- **Per-namespace inspection** — run any view inside a chosen netns (`ip -n` /
-  `nsenter`); the `netns` view currently lists namespaces + interface counts.
-- **`--watch` / interval mode** — refresh a view on an interval (rates for `stats`).
-- **Prometheus exporter** — expose counters/state for scraping.
+Delivered:
+- **Per-namespace inspection** — `--netns <name>` re-execs ifscope inside the
+  namespace, so every view reflects it.
+- **`--watch DURATION`** — refresh any view on an interval.
+
+Future / not planned:
+- **Prometheus exporter** — expose counters/state for scraping. (Out of scope
+  for now.)
 
 ## Out of scope (for now)
 

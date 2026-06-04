@@ -29,13 +29,20 @@ func newRootCommand(o *Options) *cobra.Command {
 		Version:       version.Version,
 		SilenceUsage:  true,
 		SilenceErrors: true,
+		// --netns re-execs the whole process inside the namespace before any
+		// command runs, so every view (commands and sysfs) sees that namespace.
+		PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
+			return o.reexecNetns()
+		},
 		// With no subcommand, legacy view selectors choose the view; otherwise
 		// the default is the interfaces+VLANs show view.
 		RunE: func(_ *cobra.Command, _ []string) error {
-			if compat.any() {
-				return o.runCompat(*compat)
-			}
-			return o.runShow()
+			return o.withWatch(func() error {
+				if compat.any() {
+					return o.runCompat(*compat)
+				}
+				return o.runShow()
+			})
 		},
 	}
 
@@ -77,6 +84,22 @@ func newRootCommand(o *Options) *cobra.Command {
 		newAllCommand(o),
 		newVersionCommand(),
 	)
+
+	// Wrap data subcommands so --watch refreshes them on an interval. version,
+	// help, and completion are excluded.
+	for _, c := range root.Commands() {
+		switch c.Name() {
+		case "version", "help", "completion":
+			continue
+		}
+		inner := c.RunE
+		if inner == nil {
+			continue
+		}
+		c.RunE = func(cmd *cobra.Command, args []string) error {
+			return o.withWatch(func() error { return inner(cmd, args) })
+		}
+	}
 
 	return root
 }
