@@ -11,20 +11,19 @@ optional tool is absent (warning, not failure).
 ## Available now
 
 `show` (interfaces + VLANs + bonds + bridges), `interfaces`, `vlans`, `bonds`,
-`bridges`, `pcie` (incl. DPDK/detached NICs), `routes` (all tables), `rules`
-(policy routing), `neighbors` (ARP/NDP), `dns`, `ovs`, `sriov`, `stats`,
-`netns`, `test`, `all`.
+`bridges`, `pcie` (incl. DPDK/detached NICs), `devlink`, `routes` (all tables),
+`rules` (policy routing), `neighbors` (ARP/NDP), `fdb`, `dns`, `ovs`, `sriov`,
+`stats`, `sockets`, `netns`, `test`, `all`.
 
-## Tier 2 — planned
+## Tier 2 — planned (remaining)
 
 | View | Source | Key fields | Effort | Notes |
 | --- | --- | --- | --- | --- |
 | `lldp` — link-layer neighbors | `lldpcli show neighbors -f json` (lldpd) | local port, remote chassis/sysname, port id/desc, mgmt IP, VLAN | M | Optional dep (lldpd); huge for datacenter topology. Degrade if absent. |
 | `tunnels` — overlay/tunnel endpoints | `ip -d -json link` (info_data) + `wg show <dev> dump` | type (vxlan/gre/geneve/wireguard), local, remote, VNI/key, port, ttl | M | WireGuard peers need `wg` (+root). Builds on the type classification already done. |
-| `devlink` — device/eswitch | `devlink -j dev`, `devlink -j port` | eswitch mode (legacy/switchdev), port flavour, pf/vf number | M | Complements SR-IOV/DPDK; switchdev is key for offload setups. |
-| `fdb` — bridge forwarding DB | `bridge -json fdb show` | mac, dev/port, vlan, flags, state | S | Pairs with the bridge view. |
 | bridge VLANs | `bridge -json vlan show` | port, vlan ids, pvid, flags | S | Could fold into the `bridges` view or `fdb`. |
-| `sockets` — listening ports | `ss -tulpnH` | proto, local addr:port, state, process (pid/name) | M | Process needs root. Slightly adjacent to interface inspection — include behind its own command. |
+
+Delivered from the original Tier 2 list: `devlink`, `fdb`, `sockets`.
 
 ## Tier 3 — planned (advanced / niche)
 

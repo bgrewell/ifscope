@@ -18,11 +18,14 @@ type Report struct {
 	Routes     []Route          `json:"routes,omitempty"`
 	Rules      []Rule           `json:"rules,omitempty"`
 	Neighbors  []Neighbor       `json:"neighbors,omitempty"`
+	FDB        []FDBEntry       `json:"fdb,omitempty"`
 	DNS        []DNS            `json:"dns,omitempty"`
 	PCIe       []PCIDevice      `json:"pcie,omitempty"`
+	Devlink    []DevlinkPort    `json:"devlink,omitempty"`
 	OVS        *OVS             `json:"ovs,omitempty"`
 	Netns      []Netns          `json:"netns,omitempty"`
 	Stats      []InterfaceStats `json:"stats,omitempty"`
+	Sockets    []Socket         `json:"sockets,omitempty"`
 	Tests      []TestResult     `json:"tests,omitempty"`
 	Warnings   []Warning        `json:"warnings,omitempty"`
 }
