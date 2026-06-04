@@ -9,27 +9,29 @@ type Host struct {
 // it as a human table view or as JSON. The Version field versions the JSON
 // schema so consumers can adapt to future changes.
 type Report struct {
-	Version    string           `json:"version"`
-	Host       Host             `json:"host"`
-	Interfaces []Interface      `json:"interfaces,omitempty"`
-	VLANs      []Interface      `json:"vlans,omitempty"`
-	Bonds      []Bond           `json:"bonds,omitempty"`
-	Bridges    []Bridge         `json:"bridges,omitempty"`
-	Tunnels    []Tunnel         `json:"tunnels,omitempty"`
-	Routes     []Route          `json:"routes,omitempty"`
-	Rules      []Rule           `json:"rules,omitempty"`
-	Neighbors  []Neighbor       `json:"neighbors,omitempty"`
-	LLDP       []LLDPNeighbor   `json:"lldp,omitempty"`
-	FDB        []FDBEntry       `json:"fdb,omitempty"`
-	DNS        []DNS            `json:"dns,omitempty"`
-	PCIe       []PCIDevice      `json:"pcie,omitempty"`
-	Devlink    []DevlinkPort    `json:"devlink,omitempty"`
-	OVS        *OVS             `json:"ovs,omitempty"`
-	Netns      []Netns          `json:"netns,omitempty"`
-	Stats      []InterfaceStats `json:"stats,omitempty"`
-	Sockets    []Socket         `json:"sockets,omitempty"`
-	Tests      []TestResult     `json:"tests,omitempty"`
-	Warnings   []Warning        `json:"warnings,omitempty"`
+	Version     string            `json:"version"`
+	Host        Host              `json:"host"`
+	Interfaces  []Interface       `json:"interfaces,omitempty"`
+	VLANs       []Interface       `json:"vlans,omitempty"`
+	Bonds       []Bond            `json:"bonds,omitempty"`
+	Bridges     []Bridge          `json:"bridges,omitempty"`
+	BridgeVLANs []BridgeVLAN      `json:"bridge_vlans,omitempty"`
+	Tunnels     []Tunnel          `json:"tunnels,omitempty"`
+	WireGuard   []WireGuardDevice `json:"wireguard,omitempty"`
+	Routes      []Route           `json:"routes,omitempty"`
+	Rules       []Rule            `json:"rules,omitempty"`
+	Neighbors   []Neighbor        `json:"neighbors,omitempty"`
+	LLDP        []LLDPNeighbor    `json:"lldp,omitempty"`
+	FDB         []FDBEntry        `json:"fdb,omitempty"`
+	DNS         []DNS             `json:"dns,omitempty"`
+	PCIe        []PCIDevice       `json:"pcie,omitempty"`
+	Devlink     []DevlinkPort     `json:"devlink,omitempty"`
+	OVS         *OVS              `json:"ovs,omitempty"`
+	Netns       []Netns           `json:"netns,omitempty"`
+	Stats       []InterfaceStats  `json:"stats,omitempty"`
+	Sockets     []Socket          `json:"sockets,omitempty"`
+	Tests       []TestResult      `json:"tests,omitempty"`
+	Warnings    []Warning         `json:"warnings,omitempty"`
 }
 
 // AddWarning appends a warning to the report.
