@@ -1,0 +1,1 @@
+[{"mdb":[{"index":5,"dev":"br0","port":"veth0","grp":"ff02::1:ffe7:331c","state":"temp","flags":[]},{"index":5,"dev":"br0","port":"veth0","grp":"239.1.1.1","state":"permanent","flags":[]}],"router":{}}]

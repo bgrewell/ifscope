@@ -76,11 +76,13 @@ Interfaces
 | `ifscope ovs` | Open vSwitch bridges, ports, and VLAN tags |
 | `ifscope sriov` | SR-IOV PF/VF state |
 | `ifscope qdisc` | Per-interface queueing discipline / traffic shaping |
+| `ifscope classes` | Traffic-control shaping classes (htb/hfsc rate/ceil) |
 | `ifscope offloads` | NIC offload features (checksum, TSO, GSO, GRO, …) |
 | `ifscope queues` | Channels, rings, coalesce, RSS, and RPS/XPS steering |
 | `ifscope irq` | NIC interrupt CPU affinity (alias `affinity`) |
 | `ifscope ptp` | Hardware timestamping / PTP capabilities |
 | `ifscope multicast` | IP multicast group memberships (alias `maddr`) |
+| `ifscope mdb` | Bridge multicast database |
 | `ifscope stats` | Per-interface traffic and error counters |
 | `ifscope sockets` | Listening TCP/UDP sockets (alias `ss`) |
 | `ifscope netns` | Network namespaces |
