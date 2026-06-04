@@ -38,11 +38,12 @@ Also delivered: `queues` now includes RSS ring count, interrupt coalescing,
 and RPS/XPS steering counts; `ptp` (hardware timestamping / PTP); `mdb` (bridge
 multicast database); `classes` (htb/hfsc shaping classes with rate/ceil).
 
+Also delivered: `filters` (tc classifiers → flowid).
+
 Remaining / optional:
 
 | View | Source | Notes |
 | --- | --- | --- |
-| tc filters | `tc -json filter show dev <d>` | Complements `classes`; rules mapping traffic to classes. |
 | `wifi` | `iw dev`, `iw <dev> link` | Deferred until a wireless NIC is available to test against. |
 
 Note: `tc class` JSON needs a recent iproute2 (older versions emit text for

@@ -71,6 +71,7 @@ func newRootCommand(o *Options) *cobra.Command {
 		newSRIOVCommand(o),
 		newQdiscCommand(o),
 		newClassesCommand(o),
+		newFiltersCommand(o),
 		newOffloadsCommand(o),
 		newQueuesCommand(o),
 		newIRQCommand(o),

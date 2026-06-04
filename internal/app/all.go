@@ -52,6 +52,8 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, qw...)
 	classes, clw := o.collectClasses(ctx)
 	warnings = append(warnings, clw...)
+	filters, flw := o.collectFilters(ctx)
+	warnings = append(warnings, flw...)
 	offloads, ow := o.collectOffloads(ctx)
 	warnings = append(warnings, ow...)
 	queues, quw := o.collectQueues(ctx)
@@ -95,6 +97,7 @@ func (o *Options) runAll() error {
 	rep.IRQs = irqs
 	rep.PTP = ptps
 	rep.TCClasses = classes
+	rep.TCFilters = filters
 	rep.Multicast = mcast
 	rep.MDB = mdb
 	rep.Netns = netns
@@ -165,6 +168,10 @@ func (o *Options) runAll() error {
 		if len(classes) > 0 {
 			fmt.Fprintln(os.Stdout)
 			renderClasses(ro, classes)
+		}
+		if len(filters) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderFilters(ro, filters)
 		}
 		if len(offloads) > 0 {
 			fmt.Fprintln(os.Stdout)
