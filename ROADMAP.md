@@ -35,15 +35,18 @@ Delivered: `qdisc` (root discipline per device), `offloads`, `queues`
 (IP group memberships).
 
 Also delivered: `queues` now includes RSS ring count, interrupt coalescing,
-and RPS/XPS steering counts; `ptp` (hardware timestamping / PTP).
+and RPS/XPS steering counts; `ptp` (hardware timestamping / PTP); `mdb` (bridge
+multicast database); `classes` (htb/hfsc shaping classes with rate/ceil).
 
 Remaining / optional:
 
 | View | Source | Notes |
 | --- | --- | --- |
-| bridge MDB (extend `multicast`) | `bridge -json mdb` | Multicast forwarding DB; needs a snooping bridge to exercise. |
-| qdisc class/filter hierarchy | `tc -json class/filter show dev <d>` | Deepens `qdisc` beyond the root discipline. |
+| tc filters | `tc -json filter show dev <d>` | Complements `classes`; rules mapping traffic to classes. |
 | `wifi` | `iw dev`, `iw <dev> link` | Deferred until a wireless NIC is available to test against. |
+
+Note: `tc class` JSON needs a recent iproute2 (older versions emit text for
+`class show`); ifscope degrades to a warning on those.
 
 ## Cross-cutting / future
 

@@ -50,6 +50,8 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, dlw...)
 	qdiscs, qw := o.collectQdisc(ctx)
 	warnings = append(warnings, qw...)
+	classes, clw := o.collectClasses(ctx)
+	warnings = append(warnings, clw...)
 	offloads, ow := o.collectOffloads(ctx)
 	warnings = append(warnings, ow...)
 	queues, quw := o.collectQueues(ctx)
@@ -60,6 +62,8 @@ func (o *Options) runAll() error {
 	warnings = append(warnings, ptw...)
 	mcast, mw := o.collectMulticast(ctx)
 	warnings = append(warnings, mw...)
+	mdb, mdbw := o.collectMDB(ctx)
+	warnings = append(warnings, mdbw...)
 	stats, sw := o.collectStats(ctx)
 	warnings = append(warnings, sw...)
 	sockets, sockw := o.collectSockets(ctx)
@@ -90,7 +94,9 @@ func (o *Options) runAll() error {
 	rep.Queues = queues
 	rep.IRQs = irqs
 	rep.PTP = ptps
+	rep.TCClasses = classes
 	rep.Multicast = mcast
+	rep.MDB = mdb
 	rep.Netns = netns
 	rep.Stats = stats
 	rep.Sockets = sockets
@@ -156,6 +162,10 @@ func (o *Options) runAll() error {
 			fmt.Fprintln(os.Stdout)
 			renderQdisc(ro, qdiscs)
 		}
+		if len(classes) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderClasses(ro, classes)
+		}
 		if len(offloads) > 0 {
 			fmt.Fprintln(os.Stdout)
 			renderOffloads(ro, offloads)
@@ -175,6 +185,10 @@ func (o *Options) runAll() error {
 		if len(mcast) > 0 {
 			fmt.Fprintln(os.Stdout)
 			renderMulticast(ro, mcast)
+		}
+		if len(mdb) > 0 {
+			fmt.Fprintln(os.Stdout)
+			renderMDB(ro, mdb)
 		}
 		fmt.Fprintln(os.Stdout)
 		renderStats(ro, stats)

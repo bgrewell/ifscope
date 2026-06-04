@@ -31,7 +31,9 @@ type Report struct {
 	Queues      []Queues          `json:"queues,omitempty"`
 	IRQs        []IRQ             `json:"irqs,omitempty"`
 	PTP         []PTP             `json:"ptp,omitempty"`
+	TCClasses   []TCClass         `json:"tc_classes,omitempty"`
 	Multicast   []MulticastGroup  `json:"multicast,omitempty"`
+	MDB         []MDBEntry        `json:"mdb,omitempty"`
 	OVS         *OVS              `json:"ovs,omitempty"`
 	Netns       []Netns           `json:"netns,omitempty"`
 	Stats       []InterfaceStats  `json:"stats,omitempty"`
