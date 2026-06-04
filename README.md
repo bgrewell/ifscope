@@ -77,6 +77,7 @@ Interfaces
 | `ifscope sriov` | SR-IOV PF/VF state |
 | `ifscope qdisc` | Per-interface queueing discipline / traffic shaping |
 | `ifscope classes` | Traffic-control shaping classes (htb/hfsc rate/ceil) |
+| `ifscope filters` | Traffic-control filters / classifiers (→ flowid) |
 | `ifscope offloads` | NIC offload features (checksum, TSO, GSO, GRO, …) |
 | `ifscope queues` | Channels, rings, coalesce, RSS, and RPS/XPS steering |
 | `ifscope irq` | NIC interrupt CPU affinity (alias `affinity`) |

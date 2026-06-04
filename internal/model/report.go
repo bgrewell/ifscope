@@ -32,6 +32,7 @@ type Report struct {
 	IRQs        []IRQ             `json:"irqs,omitempty"`
 	PTP         []PTP             `json:"ptp,omitempty"`
 	TCClasses   []TCClass         `json:"tc_classes,omitempty"`
+	TCFilters   []TCFilter        `json:"tc_filters,omitempty"`
 	Multicast   []MulticastGroup  `json:"multicast,omitempty"`
 	MDB         []MDBEntry        `json:"mdb,omitempty"`
 	OVS         *OVS              `json:"ovs,omitempty"`
