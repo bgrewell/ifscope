@@ -30,16 +30,47 @@ summary. The same data is available as stable JSON for automation.
 
 `ifscope` is **read-only by design** — it never changes host configuration.
 
+## Install
+
+Install the latest release with the script (Linux, amd64/arm64). It downloads
+the release tarball, verifies its checksum, and installs the `ifscope` binary:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bgrewell/ifscope/main/install.sh | sh
+```
+
+By default it installs to `/usr/local/bin` (using `sudo` if needed), falling
+back to `~/.local/bin`. Options:
+
+```bash
+# Pin a version
+curl -fsSL https://raw.githubusercontent.com/bgrewell/ifscope/main/install.sh | sh -s -- --version v0.4.1
+
+# Install to a specific directory (no sudo)
+curl -fsSL https://raw.githubusercontent.com/bgrewell/ifscope/main/install.sh | sh -s -- --dir "$HOME/.local/bin"
+
+# Uninstall (from the same dir it was installed to)
+curl -fsSL https://raw.githubusercontent.com/bgrewell/ifscope/main/install.sh | sh -s -- --uninstall
+```
+
+Environment overrides `IFSCOPE_VERSION` and `IFSCOPE_INSTALL_DIR` work too.
+Prefer not to pipe to `sh`? Download `install.sh`, read it, then run it.
+
 ## Quick start
 
 ```bash
-# Build (Go 1.24+)
-make build
-./bin/ifscope
-
-# Or install onto your PATH
-make install
+ifscope            # interfaces + VLANs
 ifscope --help
+```
+
+## Build from source
+
+```bash
+# Requires Go 1.24+
+make build         # ./bin/ifscope with version metadata
+make install       # install onto your PATH
+make test          # unit tests
+make check         # gofmt check, vet, lint, test
 ```
 
 ## Example output
@@ -249,14 +280,6 @@ Inspection commands return 0 even when optional data is missing.
 - Bonds are summarized (mode, active slave, members); deeper team/bridge
   inspection, network namespaces, and VRF are out of scope for this release.
 - Connectivity tests are reachability checks, not a network benchmark.
-
-## Build from source
-
-```bash
-make build      # ./bin/ifscope with version metadata
-make test       # unit tests
-make check      # gofmt check, vet, lint, test
-```
 
 ## License
 
