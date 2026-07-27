@@ -122,7 +122,7 @@ Interfaces
 | `ifscope all` | Every inspection table |
 | `ifscope version` | Build metadata |
 
-Remaining optional items (tc filters, wifi) are tracked in
+Remaining optional items (currently Wi-Fi inspection) are tracked in
 [ROADMAP.md](ROADMAP.md).
 
 ### Global flags
@@ -134,6 +134,7 @@ Remaining optional items (tc filters, wifi) are tracked in
 --barebones, -b   plain pipe-delimited tables
 --no-color        disable color
 --color           auto|always|never
+--debug           enable debug logging
 --warnings        always show collection warnings
 --up, -u          only interfaces that are UP
 --interface NAME  filter to one interface
@@ -242,12 +243,20 @@ ifscope test --throughput
 | Tool | Required? | Used for |
 | --- | --- | --- |
 | `ip` (iproute2) | required | interfaces, VLANs, routes, VF attributes |
-| `ethtool` | optional | driver, firmware, speed, port |
+| `bridge` (iproute2) | optional | bridge VLANs, FDB, multicast database |
+| `tc` (iproute2) | optional | qdiscs, shaping classes, traffic-control filters |
+| `ethtool` | optional | driver, firmware, speed, port, offloads, queues, PTP |
 | `lspci` (pciutils) | optional | PCIe device descriptions, vendor/device IDs |
 | `resolvectl` (systemd) | optional | DNS resolver state |
 | `ovs-vsctl` | optional | Open vSwitch topology |
+| `devlink` | optional | devlink ports and switchdev state |
+| `lldpcli` (lldpd) | optional | LLDP neighbor information |
+| `wg` (wireguard-tools) | optional | WireGuard interfaces and peers |
+| `ss` (iproute2) | optional | listening TCP/UDP sockets |
 | `ping` (iputils) | optional | connectivity ping tests |
-| sysfs (`/sys`) | built-in | PCIe attributes, SR-IOV PF/VF state |
+| `sudo` | optional | non-interactive OVS retry when direct access is denied |
+| sysfs/procfs (`/sys`, `/proc`) | built-in | PCIe, SR-IOV, queues, IRQ affinity |
+| Go HTTP client | built-in | HTTPS and opt-in throughput connectivity tests |
 
 Missing optional tools degrade gracefully: affected fields are left empty and a
 warning is recorded (shown with `--warnings`, or in JSON `warnings[]`).
@@ -258,6 +267,8 @@ warning is recorded (shown with `--warnings`, or in JSON `warnings[]`).
 
 - **OVS**: `ovs-vsctl` typically requires root; `ifscope` auto-retries with
   `sudo -n` (disable with `--no-sudo`).
+- **Network namespaces**: entering a namespace with `--netns` generally
+  requires root or the corresponding capabilities.
 - **Some ethtool/SR-IOV fields** may be unavailable without privileges; they
   are reported as empty rather than failing the command.
 
@@ -277,8 +288,13 @@ Inspection commands return 0 even when optional data is missing.
 ## Known limitations
 
 - Linux only.
-- Bonds are summarized (mode, active slave, members); deeper team/bridge
-  inspection, network namespaces, and VRF are out of scope for this release.
+- Bonds are summarized (mode, active slave, members); `teamd` interfaces are
+  not inspected.
+- Named network namespaces can be listed and entered, but ifscope does not yet
+  build a cross-namespace topology or correlate veth peers across namespaces.
+- VRFs and wireless interfaces do not yet have dedicated views.
+- Firewall/NAT/conntrack state is intentionally outside the current inspection
+  scope.
 - Connectivity tests are reachability checks, not a network benchmark.
 
 ## License
