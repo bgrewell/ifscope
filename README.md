@@ -238,6 +238,24 @@ ifscope test --throughput
 
 `ifscope test` exits non-zero (10) if any test fails.
 
+## Traffic rates
+
+`ifscope stats` shows raw kernel counters by default. Use `--rate` for a
+bounded two-sample measurement, or `--watch` to calculate rates between
+refreshes:
+
+```bash
+ifscope stats --rate 2s
+ifscope stats --watch 2s
+ifscope stats --rate 1s --sort drops --top 5
+```
+
+Rate output includes RX/TX bits and packets per second, error and drop rates,
+and utilization when the kernel reports a usable link speed. JSON retains the
+raw counters and adds a `rates` object with the exact sample duration. Counter
+resets, interface recreation, and newly appeared interfaces are reported as
+statuses instead of producing misleading rates.
+
 ## Dependencies
 
 | Tool | Required? | Used for |
