@@ -9,6 +9,7 @@ import (
 
 // ipLinkStats mirrors the fields of `ip -s -j link show` ifscope consumes.
 type ipLinkStats struct {
+	IfIndex int    `json:"ifindex"`
 	IfName  string `json:"ifname"`
 	Stats64 *struct {
 		Rx struct {
@@ -41,6 +42,7 @@ func IPLinkStats(data []byte) ([]model.InterfaceStats, error) {
 			continue
 		}
 		out = append(out, model.InterfaceStats{
+			ID:         l.IfIndex,
 			Name:       l.IfName,
 			RxBytes:    l.Stats64.Rx.Bytes,
 			RxPackets:  l.Stats64.Rx.Packets,

@@ -3,11 +3,13 @@ package collect
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/bgrewell/ifscope/internal/model"
 	"github.com/bgrewell/ifscope/internal/parse"
 	"github.com/bgrewell/ifscope/internal/run"
+	"github.com/bgrewell/ifscope/internal/sysfs"
 )
 
 // Stats collects per-interface traffic and error counters via iproute2.
@@ -33,6 +35,16 @@ func (c *Stats) Collect(ctx context.Context) ([]model.InterfaceStats, []model.Wa
 	stats, perr := parse.IPLinkStats(stdout)
 	if perr != nil {
 		return nil, []model.Warning{{Source: "ip", Message: perr.Error()}}
+	}
+	for i := range stats {
+		speed, serr := sysfs.ReadString(sysfs.OS{}, "/sys/class/net/"+stats[i].Name+"/speed")
+		if serr != nil {
+			continue
+		}
+		mbps, serr := strconv.ParseUint(speed, 10, 64)
+		if serr == nil && mbps > 0 {
+			stats[i].LinkSpeedBps = mbps * 1_000_000
+		}
 	}
 	return stats, nil
 }

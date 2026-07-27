@@ -3,6 +3,7 @@ package app
 import (
 	"time"
 
+	"github.com/bgrewell/ifscope/internal/model"
 	"github.com/spf13/cobra"
 )
 
@@ -37,6 +38,13 @@ type Options struct {
 	// Cross-cutting
 	Watch time.Duration
 	Netns string
+
+	// Statistics (bound on the stats command).
+	StatsRate       time.Duration
+	StatsSort       string
+	StatsTop        int
+	statsPrevious   []model.InterfaceStats
+	statsPreviousAt time.Time
 
 	// Connectivity (bound on the test command)
 	PingTarget       string
