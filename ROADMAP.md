@@ -11,9 +11,11 @@ optional tool is absent (warning, not failure).
 ## Available now
 
 `show` (interfaces + VLANs + bonds + bridges), `interfaces`, `vlans`, `bonds`,
-`bridges`, `pcie` (incl. DPDK/detached NICs), `devlink`, `routes` (all tables),
-`rules` (policy routing), `neighbors` (ARP/NDP), `fdb`, `dns`, `ovs`, `sriov`,
-`stats`, `sockets`, `netns`, `test`, `all`.
+`bridges`, `bridge-vlans`, `tunnels`, `wireguard`, `pcie` (incl.
+DPDK/detached NICs), `devlink`, `routes` (all tables), `rules` (policy
+routing), `neighbors` (ARP/NDP), `lldp`, `fdb`, `dns`, `ovs`, `sriov`,
+`qdisc`, `classes`, `filters`, `offloads`, `queues`, `irq`, `ptp`,
+`multicast`, `mdb`, `stats`, `sockets`, `netns`, `test`, `all`.
 
 ## Tier 2 — complete
 
@@ -59,6 +61,9 @@ Delivered:
 Future / not planned:
 - **Prometheus exporter** — expose counters/state for scraping. (Out of scope
   for now.)
+- **Cross-namespace topology / VRF correlation** — named namespaces can be
+  listed and entered today, but host-wide veth/VRF/container topology is not
+  yet modeled.
 
 ## Out of scope (for now)
 
