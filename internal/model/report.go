@@ -40,6 +40,7 @@ type Report struct {
 	Stats       []InterfaceStats  `json:"stats,omitempty"`
 	Sockets     []Socket          `json:"sockets,omitempty"`
 	Tests       []TestResult      `json:"tests,omitempty"`
+	Path        *Path             `json:"path,omitempty"`
 	Warnings    []Warning         `json:"warnings,omitempty"`
 }
 

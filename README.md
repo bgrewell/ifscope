@@ -99,6 +99,7 @@ Interfaces
 | `ifscope pcie` | PCIe network devices (driver, kernel binding, vendor/device, NUMA, link) |
 | `ifscope devlink` | devlink ports (PF/VF flavour, switchdev) |
 | `ifscope routes` | Routing tables (all tables, with the table name) |
+| `ifscope path` | Explain DNS candidates, route selection, gateway neighbor, topology, and MTU |
 | `ifscope rules` | Routing policy rules (source-based / policy routing) |
 | `ifscope neighbors` | ARP/NDP neighbor table (alias `arp`) |
 | `ifscope lldp` | LLDP link-layer neighbors (chassis, port, mgmt IP) |
@@ -222,6 +223,19 @@ custom tables used by policy routing are visible.
 `from`/`to`, input/output interface, fwmark, and the table each rule selects.
 Together these represent **source-based / policy routing**, which the main table
 alone doesn't reveal.
+
+`ifscope path <destination>` asks the kernel how each resolved IPv4/IPv6
+candidate would be reached, then correlates the selected route with policy
+rules, source address, gateway neighbor state, local interface parent chain,
+and the smallest known local MTU. It is passive unless active probes are added
+in a future release.
+
+```bash
+ifscope path example.com
+ifscope path 2001:db8::10 --family 6 --source 2001:db8::2
+ifscope path api.example.com --protocol tcp --port 443 --out-interface eth0
+ifscope path example.com --json --pretty
+```
 
 ## Connectivity tests
 
