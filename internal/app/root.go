@@ -62,6 +62,7 @@ func newRootCommand(o *Options) *cobra.Command {
 		newPCIeCommand(o),
 		newDevlinkCommand(o),
 		newRoutesCommand(o),
+		newPathCommand(o),
 		newRulesCommand(o),
 		newNeighborsCommand(o),
 		newLLDPCommand(o),
